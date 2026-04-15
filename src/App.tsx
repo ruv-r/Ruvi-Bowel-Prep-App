@@ -12,7 +12,12 @@ import {
   Sun,
   Send,
   ArrowLeft,
-  Settings
+  Settings,
+  Activity,
+  Plus,
+  FileText,
+  Download,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { askPrepAI } from './lib/gemini';
@@ -26,6 +31,14 @@ interface Instruction {
   title: string;
   content: string;
   type: 'diet' | 'medication' | 'warning';
+}
+
+interface SymptomLog {
+  id: string;
+  type: string;
+  severity: 'Mild' | 'Moderate' | 'Severe';
+  time: string;
+  timestamp: number;
 }
 
 const PREP_DATA: Record<PrepType, Instruction[]> = {
@@ -59,16 +72,35 @@ const PREP_DATA: Record<PrepType, Instruction[]> = {
 // --- Main Component ---
 
 export default function App() {
-  const [procDate, setProcDate] = useState('');
-  const [prepType, setPrepType] = useState<PrepType>('Suprep');
-  const [isSetup, setIsSetup] = useState(false);
+  const [procDate, setProcDate] = useState(() => localStorage.getItem('procDate') || '');
+  const [prepType, setPrepType] = useState<PrepType>(() => (localStorage.getItem('prepType') as PrepType) || 'Suprep');
+  const [isSetup, setIsSetup] = useState(() => localStorage.getItem('isSetup') === 'true');
   const [chatInput, setChatInput] = useState('');
-  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>([
-    { role: 'ai', text: 'Hi! I can answer questions about your prep schedule. Ask me anything!' }
-  ]);
+  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>(() => {
+    const saved = localStorage.getItem('chatHistory');
+    return saved ? JSON.parse(saved) : [
+      { role: 'ai', text: 'Hi! I can answer questions about your prep schedule. Ask me anything!' }
+    ];
+  });
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [timeRemaining, setTimeRemaining] = useState('');
+
+  // Symptom Tracking State
+  const [symptoms, setSymptoms] = useState<SymptomLog[]>(() => {
+    const saved = localStorage.getItem('symptoms');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showSymptomForm, setShowSymptomForm] = useState(false);
+  const [newSymptom, setNewSymptom] = useState({ type: 'Nausea', severity: 'Mild' as const });
+
+  useEffect(() => {
+    localStorage.setItem('procDate', procDate);
+    localStorage.setItem('prepType', prepType);
+    localStorage.setItem('isSetup', String(isSetup));
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    localStorage.setItem('symptoms', JSON.stringify(symptoms));
+  }, [procDate, prepType, isSetup, chatHistory, symptoms]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -116,6 +148,42 @@ export default function App() {
       text: aiResponse 
     }]);
     setLoading(false);
+  };
+
+  const logSymptom = (e: React.FormEvent) => {
+    e.preventDefault();
+    const now = new Date();
+    const entry: SymptomLog = {
+      id: Math.random().toString(36).substr(2, 9),
+      type: newSymptom.type,
+      severity: newSymptom.severity,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: now.getTime()
+    };
+    setSymptoms(prev => [entry, ...prev]);
+    setShowSymptomForm(false);
+  };
+
+  const deleteSymptom = (id: string) => {
+    setSymptoms(prev => prev.filter(s => s.id !== id));
+  };
+
+  const downloadSymptomLog = () => {
+    const header = `PrepGuide Symptom Log\nPrep Type: ${prepType}\nProcedure Date: ${procDate}\nGenerated: ${new Date().toLocaleString()}\n\n`;
+    const body = symptoms.map(s => {
+      const date = new Date(s.timestamp).toLocaleDateString();
+      return `[${date} ${s.time}] ${s.type} - Severity: ${s.severity}`;
+    }).join('\n');
+    
+    const blob = new Blob([header + body], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `symptom_log_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const getDaysArray = () => {
@@ -269,46 +337,108 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="glass p-6 rounded-[24px] flex flex-col min-h-0">
-                <div className="flex items-center gap-2 font-bold text-[#1e293b] mb-4">
-                  <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse"></div>
-                  Prep Assistant
-                </div>
-                
-                <div className="flex-grow bg-white/20 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-3">
-                  {chatHistory.map((msg, i) => (
-                    <div key={i} className={`p-3 px-4 rounded-2xl text-sm max-w-[90%] ${
-                      msg.role === 'user' 
-                        ? 'bg-[#2563eb] text-white self-end rounded-br-none' 
-                        : 'bg-white text-[#1e293b] self-start rounded-bl-none shadow-sm'
-                    }`}>
-                      {msg.text}
+              <div className="flex flex-col gap-5 min-h-0">
+                {/* Symptom Tracker Card */}
+                <div className="glass p-6 rounded-[24px] flex flex-col min-h-0 max-h-[300px]">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 font-bold text-[#1e293b]">
+                      <Activity className="w-5 h-5 text-[#ef4444]" />
+                      Symptom Log
                     </div>
-                  ))}
-                  {loading && (
-                    <div className="text-[10px] text-[#64748b] animate-pulse flex items-center gap-1 ml-1">
-                      AI is verifying sources...
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setShowSymptomForm(true)}
+                        className="p-1.5 bg-[#2563eb] text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        title="Log Symptom"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={downloadSymptomLog}
+                        disabled={symptoms.length === 0}
+                        className="p-1.5 bg-white/50 text-[#1e293b] border border-white/60 rounded-lg hover:bg-white/80 transition-colors disabled:opacity-50"
+                        title="Download Log"
+                      >
+                        <Download className="w-4 h-4" />
+                      </button>
                     </div>
-                  )}
-                  <div ref={chatEndRef} />
+                  </div>
+
+                  <div className="flex-grow overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                    {symptoms.length > 0 ? (
+                      symptoms.map(s => (
+                        <div key={s.id} className="bg-white/40 p-3 rounded-xl border border-white/50 flex items-center justify-between group">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-xs text-[#1e293b]">{s.type}</span>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                                s.severity === 'Mild' ? 'bg-emerald-100 text-emerald-700' :
+                                s.severity === 'Moderate' ? 'bg-amber-100 text-amber-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {s.severity}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-[#64748b] mt-0.5">{s.time}</div>
+                          </div>
+                          <button 
+                            onClick={() => deleteSymptom(s.id)}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-[#ef4444] hover:bg-red-50 rounded-md transition-all"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center text-[#64748b] text-xs italic opacity-60">
+                        No symptoms logged
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <form onSubmit={askAI} className="flex gap-2">
-                  <input 
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Ask about food, meds..."
-                    className="flex-grow bg-white/50 border border-white/60 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
-                  />
-                  <button className="bg-[#2563eb] text-white p-3 rounded-xl hover:bg-blue-700 transition-colors">
-                    <Send className="w-4 h-4" />
-                  </button>
-                </form>
-                
-                <div className="flex items-center justify-center gap-1.5 mt-4 text-[#10b981] font-bold text-[10px] uppercase tracking-widest">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Verified by Clinical RAG Sources
+                {/* AI Assistant Card */}
+                <div className="glass p-6 rounded-[24px] flex-grow flex flex-col min-h-0">
+                  <div className="flex items-center gap-2 font-bold text-[#1e293b] mb-4">
+                    <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse"></div>
+                    Prep Assistant
+                  </div>
+                  
+                  <div className="flex-grow bg-white/20 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-3">
+                    {chatHistory.map((msg, i) => (
+                      <div key={i} className={`p-3 px-4 rounded-2xl text-sm max-w-[90%] ${
+                        msg.role === 'user' 
+                          ? 'bg-[#2563eb] text-white self-end rounded-br-none' 
+                          : 'bg-white text-[#1e293b] self-start rounded-bl-none shadow-sm'
+                      }`}>
+                        {msg.text}
+                      </div>
+                    ))}
+                    {loading && (
+                      <div className="text-[10px] text-[#64748b] animate-pulse flex items-center gap-1 ml-1">
+                        AI is verifying sources...
+                      </div>
+                    )}
+                    <div ref={chatEndRef} />
+                  </div>
+
+                  <form onSubmit={askAI} className="flex gap-2">
+                    <input 
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask about food, meds..."
+                      className="flex-grow bg-white/50 border border-white/60 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
+                    />
+                    <button className="bg-[#2563eb] text-white p-3 rounded-xl hover:bg-blue-700 transition-colors">
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </form>
+                  
+                  <div className="flex items-center justify-center gap-1.5 mt-4 text-[#10b981] font-bold text-[10px] uppercase tracking-widest">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Verified by Clinical RAG Sources
+                  </div>
                 </div>
               </div>
             </div>
@@ -328,6 +458,84 @@ export default function App() {
               ))}
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Symptom Logging Modal */}
+      <AnimatePresence>
+        {showSymptomForm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSymptomForm(false)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="glass relative w-full max-w-sm p-8 rounded-[32px] shadow-2xl"
+            >
+              <h3 className="text-xl font-bold text-[#1e293b] mb-6 flex items-center gap-2">
+                <Activity className="w-6 h-6 text-[#ef4444]" />
+                Log Symptom
+              </h3>
+              <form onSubmit={logSymptom} className="space-y-5">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2">Symptom Type</label>
+                  <select 
+                    className="w-full p-3 rounded-xl border border-white/60 bg-white/50 outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
+                    value={newSymptom.type}
+                    onChange={(e) => setNewSymptom(prev => ({ ...prev, type: e.target.value }))}
+                  >
+                    <option>Nausea</option>
+                    <option>Cramping</option>
+                    <option>Dizziness</option>
+                    <option>Bloating</option>
+                    <option>Headache</option>
+                    <option>Chills</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2">Severity</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Mild', 'Moderate', 'Severe'].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setNewSymptom(prev => ({ ...prev, severity: s as any }))}
+                        className={`p-2 rounded-xl text-xs font-bold border transition-all ${
+                          newSymptom.severity === s 
+                            ? 'bg-[#2563eb] text-white border-[#2563eb]' 
+                            : 'bg-white/50 text-[#64748b] border-white/60 hover:bg-white/80'
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => setShowSymptomForm(false)}
+                    className="flex-1 p-3 rounded-xl font-bold text-[#64748b] hover:bg-white/50 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    className="flex-1 p-3 rounded-xl font-bold bg-[#2563eb] text-white shadow-lg hover:bg-blue-700 transition-all"
+                  >
+                    Log Entry
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
