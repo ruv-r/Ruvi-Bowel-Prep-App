@@ -72,15 +72,37 @@ const PREP_DATA: Record<PrepType, Instruction[]> = {
 // --- Main Component ---
 
 export default function App() {
-  const [procDate, setProcDate] = useState(() => localStorage.getItem('procDate') || '');
-  const [prepType, setPrepType] = useState<PrepType>(() => (localStorage.getItem('prepType') as PrepType) || 'Suprep');
-  const [isSetup, setIsSetup] = useState(() => localStorage.getItem('isSetup') === 'true');
+  const [procDate, setProcDate] = useState(() => {
+    try {
+      return localStorage.getItem('procDate') || '';
+    } catch (e) {
+      return '';
+    }
+  });
+  const [prepType, setPrepType] = useState<PrepType>(() => {
+    try {
+      return (localStorage.getItem('prepType') as PrepType) || 'Suprep';
+    } catch (e) {
+      return 'Suprep';
+    }
+  });
+  const [isSetup, setIsSetup] = useState(() => {
+    try {
+      return localStorage.getItem('isSetup') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>(() => {
-    const saved = localStorage.getItem('chatHistory');
-    return saved ? JSON.parse(saved) : [
-      { role: 'ai', text: 'Hi! I can answer questions about your prep schedule. Ask me anything!' }
-    ];
+    try {
+      const saved = localStorage.getItem('chatHistory');
+      return saved ? JSON.parse(saved) : [
+        { role: 'ai', text: 'Hi! I can answer questions about your prep schedule. Ask me anything!' }
+      ];
+    } catch (e) {
+      return [{ role: 'ai', text: 'Hi! I can answer questions about your prep schedule. Ask me anything!' }];
+    }
   });
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -88,8 +110,12 @@ export default function App() {
 
   // Symptom Tracking State
   const [symptoms, setSymptoms] = useState<SymptomLog[]>(() => {
-    const saved = localStorage.getItem('symptoms');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('symptoms');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
   const [showSymptomForm, setShowSymptomForm] = useState(false);
   const [newSymptom, setNewSymptom] = useState({ type: 'Nausea', severity: 'Mild' as const });
