@@ -30,6 +30,7 @@ export async function askPrepAI(question: string, prepType: string) {
       Patient's question: "${question}"
       
       Provide a helpful, accurate, and reassuring answer based on standard medical guidelines for this specific prep. 
+      IMPORTANT: Use metric units (milliliters/ml, liters/L) for all liquid measurements.
       If you are unsure or if the question is complex, advise the patient to contact their doctor's office.
       Keep the answer concise and easy to understand.`;
 

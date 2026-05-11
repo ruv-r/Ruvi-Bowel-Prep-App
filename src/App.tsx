@@ -46,25 +46,25 @@ const PREP_DATA: Record<PrepType, Instruction[]> = {
     { day: 7, title: 'Low Fiber Start', content: 'Stop fiber supplements. Avoid nuts, seeds, and raw veggies.', type: 'diet' },
     { day: 3, title: 'Check Supplies', content: 'Ensure you have picked up your Suprep kit from the pharmacy.', type: 'warning' },
     { day: 1, title: 'Clear Liquids Only', content: 'No solid food. Drink only clear liquids (broth, apple juice, Sprite).', type: 'diet' },
-    { day: 1, title: 'First Dose (6:00 PM)', content: 'Pour one 6-ounce bottle into the mixing container. Add water to the line. Drink all, then drink 32oz more water over 1 hour.', type: 'medication' },
+    { day: 1, title: 'First Dose (6:00 PM)', content: 'Pour one 175ml bottle into the mixing container. Add water to the line. Drink all, then drink 1L more water over 1 hour.', type: 'medication' },
     { day: 0, title: 'Second Dose', content: '5 hours before procedure: Repeat the same process as last night.', type: 'medication' },
   ],
   'Clenpiq': [
     { day: 7, title: 'Medication Check', content: 'Stop iron supplements and anti-diarrheal meds.', type: 'warning' },
     { day: 1, title: 'Clear Liquids', content: 'Strict clear liquid diet today. No red or purple dyes.', type: 'diet' },
-    { day: 1, title: 'Dose 1', content: 'Drink one bottle of Clenpiq. Follow with five 8oz cups of clear liquid over 5 hours.', type: 'medication' },
-    { day: 0, title: 'Dose 2', content: 'Drink second bottle. Follow with at least three 8oz cups of clear liquid.', type: 'medication' },
+    { day: 1, title: 'Dose 1', content: 'Drink one bottle of Clenpiq. Follow with five 250ml cups of clear liquid over 5 hours.', type: 'medication' },
+    { day: 0, title: 'Dose 2', content: 'Drink second bottle. Follow with at least three 250ml cups of clear liquid.', type: 'medication' },
   ],
   'Miralax/Gatorade': [
     { day: 7, title: 'Dietary Changes', content: 'Begin low-residue diet (no whole grains, seeds, or skins).', type: 'diet' },
-    { day: 1, title: 'The Mix', content: 'Mix 238g Miralax with 64oz Gatorade (not red). Chill in fridge.', type: 'medication' },
-    { day: 1, title: 'Start Drinking', content: 'At 5 PM, drink 8oz every 15 mins until half the bottle is gone.', type: 'medication' },
+    { day: 1, title: 'The Mix', content: 'Mix 238g Miralax with 2L Gatorade (not red). Chill in fridge.', type: 'medication' },
+    { day: 1, title: 'Start Drinking', content: 'At 5 PM, drink 250ml every 15 mins until half the bottle is gone.', type: 'medication' },
     { day: 0, title: 'Finish Mix', content: '6 hours before procedure, finish the remaining half of the mixture.', type: 'medication' },
   ],
   'Plenvu': [
     { day: 7, title: 'Low Residue Diet', content: 'Avoid high fiber foods like nuts, seeds, and whole grains.', type: 'diet' },
     { day: 1, title: 'Clear Liquid Diet', content: 'Breakfast, Lunch, Dinner: Clear liquids only.', type: 'diet' },
-    { day: 1, title: 'Dose 1 (6:00 PM)', content: 'Mix Dose 1 with 16oz water. Sip slowly over 30 mins.', type: 'medication' },
+    { day: 1, title: 'Dose 1 (6:00 PM)', content: 'Mix Dose 1 with 500ml water. Sip slowly over 30 mins.', type: 'medication' },
     { day: 0, title: 'Dose 2', content: 'Drink Dose 2 (sachet A and B) 6 hours before procedure.', type: 'medication' },
   ]
 };
