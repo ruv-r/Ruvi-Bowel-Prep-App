@@ -10,6 +10,7 @@
   --text-main: #1a1a1a;
   --text-muted: #666666;
   --border-color: #3e2723;
+  --highlight: #1b5e20; /* Deep Green for contrast */
   --success: #2e7d32;
   --warning: #ef6c00;
   --danger: #c62828;
@@ -39,6 +40,40 @@ body {
 
 .sharp-button:hover {
   background: #2b1b19;
+}
+
+/* Chat bubble with tail */
+.bubble {
+  position: relative;
+  border: 1px solid black;
+}
+
+.bubble-ai::after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-right-color: black;
+  border-left: 0;
+  border-top: 0;
+  margin-left: -6px;
+}
+
+.bubble-user::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-left-color: black;
+  border-right: 0;
+  border-top: 0;
+  margin-right: -6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

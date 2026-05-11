@@ -303,10 +303,10 @@ export default function App() {
             key="dashboard"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col min-h-screen"
+            className="flex flex-col h-screen overflow-hidden"
           >
             {/* Header */}
-            <header className="bg-[#3e2723] text-white flex justify-between items-center px-10 py-4 h-16">
+            <header className="bg-[#3e2723] text-white flex justify-between items-center px-10 py-4 h-16 shrink-0">
               <div className="flex items-center gap-4">
                 <div className="font-bold text-xl tracking-tighter uppercase">BowelPreppr</div>
                 <div className="h-6 w-[1px] bg-white/20"></div>
@@ -328,14 +328,14 @@ export default function App() {
             </header>
 
             {/* Timeline - Moved to top below header */}
-            <div className="bg-[#f5f5f5] border-b border-black flex items-center justify-between px-10 py-4">
+            <div className="bg-[#f5f5f5] border-b border-black flex items-center justify-between px-10 py-4 shrink-0">
               {daysArray.length > 0 ? daysArray.map((day, idx) => (
                 <div 
                   key={idx} 
                   className={`flex flex-col items-center gap-1 group cursor-pointer transition-all ${activeDay && day.daysOut === activeDay.daysOut ? 'opacity-100' : 'opacity-30 hover:opacity-100'}`}
                 >
                   <div className={`w-2 h-2 ${
-                    day.daysOut === 0 ? 'bg-red-600' : 
+                    day.daysOut === 0 ? 'bg-[var(--highlight)]' : 
                     (activeDay && day.daysOut === activeDay.daysOut) ? 'bg-[#3e2723]' : 
                     'bg-slate-400 group-hover:bg-[#3e2723]'
                   }`}></div>
@@ -350,39 +350,53 @@ export default function App() {
 
             <main className="flex-grow grid grid-cols-1 md:grid-cols-[280px_1fr_340px] gap-0 min-h-0 bg-white">
               {/* Left Column: Educational Panel */}
-              <aside className="border-r border-black flex flex-col divide-y divide-black bg-[#fcfcfc]">
+              <aside className="border-r border-black flex flex-col divide-y divide-black bg-[#fcfcfc] overflow-y-auto custom-scrollbar">
                 <div className="p-8 flex flex-col gap-4">
-                  <div className="text-[10px] uppercase tracking-widest font-black text-[#3e2723]">Understanding</div>
+                  <div className="text-[10px] uppercase tracking-widest font-black text-[var(--highlight)]">Understanding</div>
                   <h3 className="font-bold text-lg leading-tight uppercase tracking-tight">What is a colonoscopy?</h3>
                   <p className="text-sm text-[#444] leading-relaxed">
-                    A clinical examination to inspect the inner lining of your large intestine (colon and rectum). A thin, flexible tube with a camera is used to identify abnormalities like polyps.
+                    A test where doctors send a thin, flexible camera into your intestines to check for abnormalities that could develop into cancers.
                   </p>
                 </div>
                 <div className="p-8 flex flex-col gap-4">
-                  <div className="text-[10px] uppercase tracking-widest font-black text-[#3e2723]">Rationale</div>
+                  <div className="text-[10px] uppercase tracking-widest font-black text-[var(--highlight)]">Rationale</div>
                   <h3 className="font-bold text-lg leading-tight uppercase tracking-tight">The goal of Bowel Prep</h3>
                   <p className="text-sm text-[#444] leading-relaxed">
-                    A successful colonoscopy requires a completely clear colon. Residual stool can obscure visibility, leading to missed polyps or the need to repeat the entire procedure.
+                    A successful colonoscopy requires your intestines to be completely clear so that the camera can see all of the bowel walls clearly — bowel prep ensures this. If there is any residual faeces, it could obscure abnormalities and lead to missing big problems.
                   </p>
                 </div>
               </aside>
               {/* Middle Column: Instructions & Status */}
-              <section className="flex flex-col p-10 gap-8 overflow-y-auto custom-scrollbar">
+              <section className="flex flex-col p-10 gap-8 overflow-y-auto custom-scrollbar min-h-0">
                 <div className="grid grid-cols-2 gap-8">
                   <div className="border border-black p-6 flex flex-col justify-center">
-                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#3e2723] mb-2">Countdown</div>
-                    <div className="text-3xl font-mono tracking-tighter">{timeRemaining || 'T-MINUS CALCULATING'}</div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#666] mb-2">Countdown</div>
+                    <div className="text-3xl font-mono tracking-tighter text-[var(--highlight)]">{timeRemaining || 'T-MINUS CALCULATING'}</div>
                   </div>
                   <div className="border border-black p-6 flex flex-col justify-center">
-                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#3e2723] mb-2">Status</div>
-                    <div className="text-xl font-bold uppercase tracking-tight">
-                      {activeDay && activeDay.daysOut === 0 ? 'Clinical Execution' : 'Preparation Phase'}
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#666] mb-2">Status</div>
+                    <div className="text-xl font-bold uppercase tracking-tight text-[var(--highlight)]">
+                      {daysArray.length > 0 && today < new Date(new Date(daysArray[0].date).setHours(0,0,0,0)) && 'Pre-preparation phase'}
+                      {daysArray.length > 0 && today > new Date(new Date(daysArray[daysArray.length-1].date).setHours(0,0,0,0)) && 'Procedure complete'}
+                      {activeDay && today.getTime() === new Date(new Date(activeDay.date).setHours(0,0,0,0)).getTime() && (activeDay.daysOut === 0 ? 'Clinical Execution' : 'Preparation Phase')}
                     </div>
                   </div>
                 </div>
 
                 <div className="border border-black p-8 flex flex-col min-h-0">
-                  {activeDay ? (
+                  {daysArray.length > 0 && today < new Date(new Date(daysArray[0].date).setHours(0,0,0,0)) ? (
+                    <div className="py-20 text-center flex flex-col gap-4">
+                      <h2 className="text-3xl font-black uppercase tracking-tighter">Early Horizon</h2>
+                      <p className="text-sm uppercase tracking-widest font-bold text-[#666]">You are more than 7 days out from your procedure.</p>
+                      <p className="text-xs italic text-slate-500">Please return to this protocol when you are within 7 days of the scheduled date.</p>
+                    </div>
+                  ) : daysArray.length > 0 && today > new Date(new Date(daysArray[daysArray.length-1].date).setHours(0,0,0,0)) ? (
+                    <div className="py-20 text-center flex flex-col gap-4">
+                      <h2 className="text-3xl font-black uppercase tracking-tighter">Protocol Terminated</h2>
+                      <p className="text-sm uppercase tracking-widest font-bold text-[#666]">Your scheduled colonoscopy has now been completed.</p>
+                      <p className="text-xs italic text-[var(--highlight)] font-bold uppercase tracking-widest">Post-Clinical Status: Active</p>
+                    </div>
+                  ) : activeDay ? (
                     <>
                       <header className="flex justify-between items-start mb-10 border-b border-black pb-6">
                         <div>
@@ -392,7 +406,7 @@ export default function App() {
                           <p className="text-sm text-[#666] tracking-tight">Protocol must be followed with 100% adherence.</p>
                         </div>
                         {activeDay.daysOut === 0 && (
-                          <div className="bg-red-600 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+                          <div className="bg-[var(--highlight)] text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
                             Mandatory Fast
                           </div>
                         )}
@@ -405,14 +419,14 @@ export default function App() {
                               <div className={`w-12 h-12 flex items-center justify-center shrink-0 border border-black text-xl ${
                                 inst.type === 'diet' ? 'bg-[#f5f5f5]' :
                                 inst.type === 'medication' ? 'bg-[#3e2723] text-white' :
-                                'bg-red-50 text-red-600 border-red-600'
+                                'bg-[var(--highlight)] text-white border-[var(--highlight)]'
                               }`}>
                                 {inst.type === 'diet' && '01'}
                                 {inst.type === 'medication' && '02'}
                                 {inst.type === 'warning' && '!!'}
                               </div>
                               <div>
-                                <div className="font-bold text-lg uppercase tracking-tight leading-none mb-2">{inst.title}</div>
+                                <div className={`font-bold text-lg uppercase tracking-tight leading-none mb-2 ${inst.type === 'warning' ? 'text-[var(--highlight)]' : ''}`}>{inst.title}</div>
                                 <div className="text-sm text-[#444] leading-relaxed max-w-xl">{inst.content}</div>
                               </div>
                             </div>
@@ -452,7 +466,7 @@ export default function App() {
                         disabled={symptoms.length === 0}
                         className="p-1 px-2 border border-black hover:bg-black hover:text-white transition-all text-xs font-bold uppercase tracking-widest disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
                       >
-                        Log
+                        Download
                       </button>
                     </div>
                   </header>
@@ -497,12 +511,12 @@ export default function App() {
                     Protocol Assistant
                   </header>
                   
-                  <div className="flex-grow border border-black p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white">
+                  <div className="flex-grow border border-black p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-white">
                     {chatHistory.map((msg, i) => (
-                      <div key={i} className={`p-4 text-xs leading-relaxed border ${
+                      <div key={i} className={`p-4 text-xs leading-relaxed bubble ${
                         msg.role === 'user' 
-                          ? 'bg-[#3e2723] text-white self-end border-black ml-4' 
-                          : 'bg-[#f5f5f5] text-[#1a1a1a] self-start border-black mr-4'
+                          ? 'bg-[#3e2723] text-white self-end ml-6 bubble-user' 
+                          : 'bg-[#f5f5f5] text-[#1a1a1a] self-start mr-6 bubble-ai'
                       }`}>
                         {msg.text}
                       </div>
@@ -520,11 +534,11 @@ export default function App() {
                       type="text"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="ENTER PROTOCOL QUERY..."
+                      placeholder="Ask me a question"
                       className="w-full border border-black p-3 text-[10px] uppercase font-bold tracking-widest outline-none focus:bg-[#f5f5f5]"
                     />
                     <button className="bg-[#3e2723] text-white p-3 hover:bg-[#2b1b19] transition-all text-xs font-black uppercase tracking-[0.3em]">
-                      Execute Inquiry
+                      Send message
                     </button>
                   </form>
                   <div className="flex items-center justify-center gap-1.5 mt-4 text-[8px] uppercase tracking-widest font-black opacity-30">
