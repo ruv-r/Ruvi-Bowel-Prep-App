@@ -81,7 +81,8 @@ export default function App() {
   });
   const [prepType, setPrepType] = useState<PrepType>(() => {
     try {
-      return (localStorage.getItem('prepType') as PrepType) || 'Suprep';
+      const saved = localStorage.getItem('prepType') as PrepType;
+      return (saved && PREP_DATA[saved]) ? saved : 'Suprep';
     } catch (e) {
       return 'Suprep';
     }
@@ -137,6 +138,10 @@ export default function App() {
     const interval = setInterval(() => {
       const now = new Date();
       const target = new Date(procDate);
+      if (isNaN(target.getTime())) {
+        setTimeRemaining('T-MINUS CALCULATING');
+        return;
+      }
       const diff = target.getTime() - now.getTime();
       
       if (diff <= 0) {
@@ -195,7 +200,7 @@ export default function App() {
   };
 
   const downloadSymptomLog = () => {
-    const header = `PrepGuide Symptom Log\nPrep Type: ${prepType}\nProcedure Date: ${procDate}\nGenerated: ${new Date().toLocaleString()}\n\n`;
+    const header = `BowelPreppr Symptom Log\nPrep Type: ${prepType}\nProcedure Date: ${procDate}\nGenerated: ${new Date().toLocaleString()}\n\n`;
     const body = symptoms.map(s => {
       const date = new Date(s.timestamp).toLocaleDateString();
       return `[${date} ${s.time}] ${s.type} - Severity: ${s.severity}`;
@@ -214,14 +219,18 @@ export default function App() {
 
   const getDaysArray = () => {
     const dates = [];
+    if (!procDate) return [];
+    
     const target = new Date(procDate);
+    if (isNaN(target.getTime())) return [];
+
     for (let i = 7; i >= 0; i--) {
       const d = new Date(target);
       d.setDate(d.getDate() - i);
       dates.push({
         date: d,
         daysOut: i,
-        instructions: PREP_DATA[prepType].filter(item => item.day === i)
+        instructions: (PREP_DATA[prepType] || []).filter(item => item.day === i)
       });
     }
     return dates;
@@ -231,57 +240,60 @@ export default function App() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const daysArray = getDaysArray();
-  const currentDayIndex = daysArray.findIndex(d => {
+  
+  const currentDayIndex = daysArray.length > 0 ? daysArray.findIndex(d => {
     const dCopy = new Date(d.date);
     dCopy.setHours(0, 0, 0, 0);
     return dCopy.getTime() === today.getTime();
-  });
+  }) : -1;
   
   // Default to Day -1 if today is not in range, or the closest day
-  const activeDay = currentDayIndex !== -1 ? daysArray[currentDayIndex] : daysArray[6];
+  const activeDay = daysArray.length > 0 
+    ? (currentDayIndex !== -1 ? daysArray[currentDayIndex] : daysArray[6]) 
+    : null;
 
   return (
-    <div className="min-h-screen p-6 flex flex-col gap-5 max-w-[1200px] mx-auto">
+    <div className="min-h-screen p-0 flex flex-col font-sans bg-white text-[#1a1a1a]">
       <AnimatePresence mode="wait">
         {!isSetup ? (
           <motion.div 
             key="setup"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="flex-grow flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-grow flex items-center justify-center p-6 bg-[#f9f9f9]"
           >
-            <div className="glass w-full max-w-md p-10 rounded-[32px]">
+            <div className="bg-white border border-[#3e2723] w-full max-w-md p-10">
               <div className="flex justify-center mb-8">
-                <div className="w-16 h-16 bg-[#2563eb] rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                  P
+                <div className="w-16 h-16 bg-[#3e2723] flex items-center justify-center text-white text-2xl font-bold">
+                  B
                 </div>
               </div>
-              <h1 className="text-3xl font-bold text-center mb-2 text-[#1e293b]">PrepGuide</h1>
-              <p className="text-center text-[#64748b] mb-10">Personalized schedule for your procedure.</p>
+              <h1 className="text-3xl font-bold text-center mb-2 tracking-tight">BowelPreppr</h1>
+              <p className="text-center text-[#666666] mb-10 text-sm italic">Cleanly prepared. Simply done.</p>
               
               <form onSubmit={handleStart} className="space-y-6">
-                <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2 ml-1">Procedure Date</label>
+                <div className="border-l-4 border-[#3e2723] pl-4">
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-[#666666] mb-1">Procedure Date</label>
                   <input 
                     type="date" 
                     required
-                    className="w-full p-4 rounded-2xl border border-white/60 bg-white/50 outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
+                    className="w-full p-2 border border-black outline-none focus:bg-[#f5f5f5] transition-all"
                     onChange={(e) => setProcDate(e.target.value)}
                   />
                 </div>
-                <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2 ml-1">Prep Medication</label>
+                <div className="border-l-4 border-[#3e2723] pl-4">
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-[#666666] mb-1">Prep Medication</label>
                   <select 
-                    className="w-full p-4 rounded-2xl border border-white/60 bg-white/50 outline-none focus:ring-2 focus:ring-[#2563eb] transition-all appearance-none"
+                    className="w-full p-2 border border-black outline-none focus:bg-[#f5f5f5] transition-all appearance-none bg-white font-medium"
                     value={prepType}
                     onChange={(e) => setPrepType(e.target.value as PrepType)}
                   >
                     {Object.keys(PREP_DATA).map(type => <option key={type} value={type}>{type}</option>)}
                   </select>
                 </div>
-                <button className="w-full bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg active:scale-[0.98] mt-4">
-                  Generate My Schedule
+                <button className="w-full bg-[#3e2723] hover:bg-[#2b1b19] text-white font-bold py-4 uppercase tracking-widest text-xs transition-all mt-4">
+                  Establish My Schedule
                 </button>
               </form>
             </div>
@@ -291,198 +303,237 @@ export default function App() {
             key="dashboard"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-grow flex flex-col gap-5"
+            className="flex flex-col min-h-screen"
           >
             {/* Header */}
-            <header className="glass flex justify-between items-center px-8 py-5 rounded-[24px]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#2563eb] rounded-xl flex items-center justify-center text-white font-bold">P</div>
-                <div className="font-bold text-xl text-[#1e293b]">PrepPath</div>
+            <header className="bg-[#3e2723] text-white flex justify-between items-center px-10 py-4 h-16">
+              <div className="flex items-center gap-4">
+                <div className="font-bold text-xl tracking-tighter uppercase">BowelPreppr</div>
+                <div className="h-6 w-[1px] bg-white/20"></div>
+                <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 whitespace-nowrap">Clinical Prep Assistant</div>
               </div>
-              <div className="bg-white/50 px-5 py-2 rounded-full text-sm flex items-center gap-3 border border-white/60">
-                <span className="text-[#64748b]">Prep Type:</span>
-                <strong className="text-[#1e293b]">{prepType}</strong>
-                <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                <span className="text-[#64748b]">Date:</span>
-                <strong className="text-[#1e293b]">{new Date(procDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
-                <button onClick={() => setIsSetup(false)} className="ml-2 p-1 hover:bg-white/80 rounded-full transition-colors">
-                  <Settings className="w-4 h-4 text-[#64748b]" />
+              <div className="flex items-center gap-6 text-[11px] uppercase tracking-widest font-medium">
+                <div className="flex gap-2">
+                  <span className="opacity-60">Medication:</span>
+                  <span>{prepType}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="opacity-60">Procedure:</span>
+                  <span>{new Date(procDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+                <button onClick={() => setIsSetup(false)} className="hover:opacity-60 transition-opacity">
+                  <Settings className="w-4 h-4" />
                 </button>
               </div>
             </header>
 
-            <div className="flex-grow grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 min-h-0">
-              <div className="flex flex-col gap-5 min-h-0">
-                <div className="grid grid-cols-2 gap-5 h-[140px]">
-                  <div className="glass p-6 flex flex-col justify-center rounded-[24px]">
-                    <div className="text-[10px] uppercase tracking-widest font-bold text-[#64748b] mb-1">Time Remaining</div>
-                    <div className="text-2xl font-bold text-[#1e293b]">{timeRemaining || 'Calculating...'}</div>
-                  </div>
-                  <div className="glass p-6 flex flex-col justify-center rounded-[24px]">
-                    <div className="text-[10px] uppercase tracking-widest font-bold text-[#64748b] mb-1">Status</div>
-                    <div className="text-2xl font-bold text-[#f59e0b]">Active Prep Stage</div>
-                  </div>
-                </div>
-
-                <div className="glass flex-grow p-8 rounded-[24px] relative overflow-hidden flex flex-col min-h-0">
-                  <div className="absolute top-8 right-8 bg-[#ef4444] text-white px-3 py-1 rounded-lg font-bold text-xs uppercase tracking-wider">
-                    {activeDay.daysOut === 0 ? 'PROCEDURE DAY' : 'CRITICAL DAY'}
-                  </div>
-                  
-                  <h2 className="text-2xl font-bold text-[#1e293b] mb-1">
-                    {activeDay.daysOut === 0 ? 'Procedure Day' : `Day -${activeDay.daysOut}: Preparation Phase`}
-                  </h2>
-                  <p className="text-[#64748b] text-sm mb-8">Follow these instructions strictly to ensure a clear view for your procedure.</p>
-
-                  <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-4">
-                    {activeDay.instructions.length > 0 ? (
-                      activeDay.instructions.map((inst, i) => (
-                        <div key={i} className="flex gap-4 p-5 bg-white/30 rounded-2xl border border-white/40 shadow-sm">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl ${
-                            inst.type === 'diet' ? 'bg-[#dcfce7] text-[#166534]' :
-                            inst.type === 'medication' ? 'bg-[#dbeafe] text-[#1e40af]' :
-                            'bg-[#fef3c7] text-[#92400e]'
-                          }`}>
-                            {inst.type === 'diet' && '☕'}
-                            {inst.type === 'medication' && '🧪'}
-                            {inst.type === 'warning' && '⚠️'}
-                          </div>
-                          <div>
-                            <div className="font-bold text-[#1e293b]">{inst.title}</div>
-                            <div className="text-sm text-[#1e293b]/80 mt-1 leading-relaxed">{inst.content}</div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-[#64748b] italic">
-                        <Info className="w-12 h-12 mb-3 opacity-20" />
-                        <p>Maintain normal low-fiber diet. Stay hydrated.</p>
-                      </div>
-                    )}
+            {/* Timeline - Moved to top below header */}
+            <div className="bg-[#f5f5f5] border-b border-black flex items-center justify-between px-10 py-4">
+              {daysArray.length > 0 ? daysArray.map((day, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex flex-col items-center gap-1 group cursor-pointer transition-all ${activeDay && day.daysOut === activeDay.daysOut ? 'opacity-100' : 'opacity-30 hover:opacity-100'}`}
+                >
+                  <div className={`w-2 h-2 ${
+                    day.daysOut === 0 ? 'bg-red-600' : 
+                    (activeDay && day.daysOut === activeDay.daysOut) ? 'bg-[#3e2723]' : 
+                    'bg-slate-400 group-hover:bg-[#3e2723]'
+                  }`}></div>
+                  <div className="text-[9px] font-bold uppercase tracking-tighter">
+                    {day.daysOut === 0 ? 'Proc' : `Day -${day.daysOut}`}
                   </div>
                 </div>
-              </div>
+              )) : (
+                <div className="text-[10px] uppercase font-bold text-[#666] w-full text-center py-1">Initializing Schedule...</div>
+              )}
+            </div>
 
-              <div className="flex flex-col gap-5 min-h-0">
-                {/* Symptom Tracker Card */}
-                <div className="glass p-6 rounded-[24px] flex flex-col min-h-0 max-h-[300px]">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 font-bold text-[#1e293b]">
-                      <Activity className="w-5 h-5 text-[#ef4444]" />
-                      Symptom Log
+            <main className="flex-grow grid grid-cols-1 md:grid-cols-[280px_1fr_340px] gap-0 min-h-0 bg-white">
+              {/* Left Column: Educational Panel */}
+              <aside className="border-r border-black flex flex-col divide-y divide-black bg-[#fcfcfc]">
+                <div className="p-8 flex flex-col gap-4">
+                  <div className="text-[10px] uppercase tracking-widest font-black text-[#3e2723]">Understanding</div>
+                  <h3 className="font-bold text-lg leading-tight uppercase tracking-tight">What is a colonoscopy?</h3>
+                  <p className="text-sm text-[#444] leading-relaxed">
+                    A clinical examination to inspect the inner lining of your large intestine (colon and rectum). A thin, flexible tube with a camera is used to identify abnormalities like polyps.
+                  </p>
+                </div>
+                <div className="p-8 flex flex-col gap-4">
+                  <div className="text-[10px] uppercase tracking-widest font-black text-[#3e2723]">Rationale</div>
+                  <h3 className="font-bold text-lg leading-tight uppercase tracking-tight">The goal of Bowel Prep</h3>
+                  <p className="text-sm text-[#444] leading-relaxed">
+                    A successful colonoscopy requires a completely clear colon. Residual stool can obscure visibility, leading to missed polyps or the need to repeat the entire procedure.
+                  </p>
+                </div>
+              </aside>
+              {/* Middle Column: Instructions & Status */}
+              <section className="flex flex-col p-10 gap-8 overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="border border-black p-6 flex flex-col justify-center">
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#3e2723] mb-2">Countdown</div>
+                    <div className="text-3xl font-mono tracking-tighter">{timeRemaining || 'T-MINUS CALCULATING'}</div>
+                  </div>
+                  <div className="border border-black p-6 flex flex-col justify-center">
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-[#3e2723] mb-2">Status</div>
+                    <div className="text-xl font-bold uppercase tracking-tight">
+                      {activeDay && activeDay.daysOut === 0 ? 'Clinical Execution' : 'Preparation Phase'}
                     </div>
-                    <div className="flex gap-2">
+                  </div>
+                </div>
+
+                <div className="border border-black p-8 flex flex-col min-h-0">
+                  {activeDay ? (
+                    <>
+                      <header className="flex justify-between items-start mb-10 border-b border-black pb-6">
+                        <div>
+                          <h2 className="text-3xl font-black uppercase tracking-tighter leading-none mb-2">
+                            {activeDay.daysOut === 0 ? 'Day of Procedure' : `Phase: Day -${activeDay.daysOut}`}
+                          </h2>
+                          <p className="text-sm text-[#666] tracking-tight">Protocol must be followed with 100% adherence.</p>
+                        </div>
+                        {activeDay.daysOut === 0 && (
+                          <div className="bg-red-600 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+                            Mandatory Fast
+                          </div>
+                        )}
+                      </header>
+
+                      <div className="space-y-6">
+                        {activeDay.instructions.length > 0 ? (
+                          activeDay.instructions.map((inst, i) => (
+                            <div key={i} className="flex gap-6 items-start">
+                              <div className={`w-12 h-12 flex items-center justify-center shrink-0 border border-black text-xl ${
+                                inst.type === 'diet' ? 'bg-[#f5f5f5]' :
+                                inst.type === 'medication' ? 'bg-[#3e2723] text-white' :
+                                'bg-red-50 text-red-600 border-red-600'
+                              }`}>
+                                {inst.type === 'diet' && '01'}
+                                {inst.type === 'medication' && '02'}
+                                {inst.type === 'warning' && '!!'}
+                              </div>
+                              <div>
+                                <div className="font-bold text-lg uppercase tracking-tight leading-none mb-2">{inst.title}</div>
+                                <div className="text-sm text-[#444] leading-relaxed max-w-xl">{inst.content}</div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-20 text-[#666] border border-dashed border-slate-300">
+                            <p className="text-sm uppercase tracking-widest font-bold">Standard Maintenance</p>
+                            <p className="text-xs mt-2 italic">Low-residue diet. Monitor hydration levels.</p>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="py-20 text-center uppercase tracking-widest font-black opacity-20">Loading Instructions...</div>
+                  )}
+                </div>
+              </section>
+
+              {/* Right Column: Symptoms & AI */}
+              <aside className="border-l border-black flex flex-col h-full overflow-hidden bg-[#fcfcfc]">
+                {/* Symptom Log */}
+                <div className="p-8 border-b border-black flex flex-col h-[350px]">
+                  <header className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-tighter text-sm">
+                      <Activity className="w-4 h-4 text-[#3e2723]" />
+                      Symptom Tracker
+                    </div>
+                    <div className="flex gap-1">
                       <button 
                         onClick={() => setShowSymptomForm(true)}
-                        className="p-1.5 bg-[#2563eb] text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        title="Log Symptom"
+                        className="p-1 px-2 border border-black hover:bg-black hover:text-white transition-all text-xs font-bold uppercase tracking-widest"
                       >
-                        <Plus className="w-4 h-4" />
+                        Add
                       </button>
                       <button 
                         onClick={downloadSymptomLog}
                         disabled={symptoms.length === 0}
-                        className="p-1.5 bg-white/50 text-[#1e293b] border border-white/60 rounded-lg hover:bg-white/80 transition-colors disabled:opacity-50"
-                        title="Download Log"
+                        className="p-1 px-2 border border-black hover:bg-black hover:text-white transition-all text-xs font-bold uppercase tracking-widest disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
                       >
-                        <Download className="w-4 h-4" />
+                        Log
                       </button>
                     </div>
-                  </div>
+                  </header>
 
-                  <div className="flex-grow overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                  <div className="flex-grow overflow-y-auto custom-scrollbar space-y-3 pr-1">
                     {symptoms.length > 0 ? (
                       symptoms.map(s => (
-                        <div key={s.id} className="bg-white/40 p-3 rounded-xl border border-white/50 flex items-center justify-between group">
+                        <div key={s.id} className="border border-black p-3 bg-white flex items-center justify-between group">
                           <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-xs text-[#1e293b]">{s.type}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                                s.severity === 'Mild' ? 'bg-emerald-100 text-emerald-700' :
-                                s.severity === 'Moderate' ? 'bg-amber-100 text-amber-700' :
-                                'bg-red-100 text-red-700'
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-[10px] uppercase tracking-widest">{s.type}</span>
+                              <span className={`text-[8px] px-1 border font-bold uppercase ${
+                                s.severity === 'Mild' ? 'border-green-600 text-green-600' :
+                                s.severity === 'Moderate' ? 'border-amber-600 text-amber-600' :
+                                'border-red-600 text-red-600'
                               }`}>
                                 {s.severity}
                               </span>
                             </div>
-                            <div className="text-[10px] text-[#64748b] mt-0.5">{s.time}</div>
+                            <div className="text-[9px] text-[#666] uppercase">{s.time}</div>
                           </div>
                           <button 
                             onClick={() => deleteSymptom(s.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-[#ef4444] hover:bg-red-50 rounded-md transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-red-600 transition-all"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
                         </div>
                       ))
                     ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-[#64748b] text-xs italic opacity-60">
-                        No symptoms logged
+                      <div className="h-full flex items-center justify-center text-[#666] text-[10px] uppercase tracking-widest font-bold opacity-30 italic">
+                        Empty Log
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* AI Assistant Card */}
-                <div className="glass p-6 rounded-[24px] flex-grow flex flex-col min-h-0">
-                  <div className="flex items-center gap-2 font-bold text-[#1e293b] mb-4">
-                    <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse"></div>
-                    Prep Assistant
-                  </div>
+                {/* AI Assistant */}
+                <div className="p-8 flex-grow flex flex-col min-h-0">
+                  <header className="flex items-center gap-2 font-bold uppercase tracking-tighter text-sm mb-6">
+                    <MessageSquare className="w-4 h-4 text-[#3e2723]" />
+                    Protocol Assistant
+                  </header>
                   
-                  <div className="flex-grow bg-white/20 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-3">
+                  <div className="flex-grow border border-black p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white">
                     {chatHistory.map((msg, i) => (
-                      <div key={i} className={`p-3 px-4 rounded-2xl text-sm max-w-[90%] ${
+                      <div key={i} className={`p-4 text-xs leading-relaxed border ${
                         msg.role === 'user' 
-                          ? 'bg-[#2563eb] text-white self-end rounded-br-none' 
-                          : 'bg-white text-[#1e293b] self-start rounded-bl-none shadow-sm'
+                          ? 'bg-[#3e2723] text-white self-end border-black ml-4' 
+                          : 'bg-[#f5f5f5] text-[#1a1a1a] self-start border-black mr-4'
                       }`}>
                         {msg.text}
                       </div>
                     ))}
                     {loading && (
-                      <div className="text-[10px] text-[#64748b] animate-pulse flex items-center gap-1 ml-1">
-                        AI is verifying sources...
+                      <div className="text-[9px] uppercase tracking-widest text-[#3e2723] animate-pulse font-black px-1">
+                        Consulting clinical knowledge base...
                       </div>
                     )}
                     <div ref={chatEndRef} />
                   </div>
 
-                  <form onSubmit={askAI} className="flex gap-2">
+                  <form onSubmit={askAI} className="flex flex-col gap-2">
                     <input 
                       type="text"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Ask about food, meds..."
-                      className="flex-grow bg-white/50 border border-white/60 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
+                      placeholder="ENTER PROTOCOL QUERY..."
+                      className="w-full border border-black p-3 text-[10px] uppercase font-bold tracking-widest outline-none focus:bg-[#f5f5f5]"
                     />
-                    <button className="bg-[#2563eb] text-white p-3 rounded-xl hover:bg-blue-700 transition-colors">
-                      <Send className="w-4 h-4" />
+                    <button className="bg-[#3e2723] text-white p-3 hover:bg-[#2b1b19] transition-all text-xs font-black uppercase tracking-[0.3em]">
+                      Execute Inquiry
                     </button>
                   </form>
-                  
-                  <div className="flex items-center justify-center gap-1.5 mt-4 text-[#10b981] font-bold text-[10px] uppercase tracking-widest">
+                  <div className="flex items-center justify-center gap-1.5 mt-4 text-[8px] uppercase tracking-widest font-black opacity-30">
                     <CheckCircle2 className="w-3 h-3" />
-                    Verified by Clinical RAG Sources
+                    Verified RAG Protocol
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="glass h-[100px] rounded-[24px] flex items-center justify-around px-8">
-              {daysArray.map((day, idx) => (
-                <div key={idx} className={`flex flex-col items-center gap-2 transition-all ${day.daysOut === activeDay.daysOut ? 'opacity-100 scale-110' : 'opacity-40 hover:opacity-60'}`}>
-                  <div className={`w-3 h-3 rounded-full ${
-                    day.daysOut === 0 ? 'bg-[#ef4444]' : 
-                    day.daysOut === activeDay.daysOut ? 'bg-[#2563eb] shadow-[0_0_10px_#2563eb]' : 
-                    'bg-[#64748b]'
-                  }`}></div>
-                  <div className="text-[10px] font-bold uppercase tracking-tighter text-[#1e293b]">
-                    {day.daysOut === 0 ? 'Proc' : `Day -${day.daysOut}`}
-                  </div>
-                </div>
-              ))}
-            </div>
+              </aside>
+            </main>
           </motion.div>
         )}
       </AnimatePresence>
@@ -496,23 +547,20 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowSymptomForm(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/80"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="glass relative w-full max-w-sm p-8 rounded-[32px] shadow-2xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="bg-white border border-[#3e2723] relative w-full max-w-sm p-10"
             >
-              <h3 className="text-xl font-bold text-[#1e293b] mb-6 flex items-center gap-2">
-                <Activity className="w-6 h-6 text-[#ef4444]" />
-                Log Symptom
-              </h3>
-              <form onSubmit={logSymptom} className="space-y-5">
+              <h3 className="text-xl font-bold mb-8 uppercase tracking-tighter">Log Interaction</h3>
+              <form onSubmit={logSymptom} className="space-y-6">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2">Symptom Type</label>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-[#666] mb-2">Symptom Type</label>
                   <select 
-                    className="w-full p-3 rounded-xl border border-white/60 bg-white/50 outline-none focus:ring-2 focus:ring-[#2563eb] transition-all"
+                    className="w-full p-2 border border-black outline-none bg-white font-bold uppercase text-xs"
                     value={newSymptom.type}
                     onChange={(e) => setNewSymptom(prev => ({ ...prev, type: e.target.value }))}
                   >
@@ -526,17 +574,17 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs uppercase tracking-widest font-bold text-[#64748b] mb-2">Severity</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-[#666] mb-2">Intensity</label>
+                  <div className="grid grid-cols-3 gap-0 border border-black">
                     {['Mild', 'Moderate', 'Severe'].map((s) => (
                       <button
                         key={s}
                         type="button"
                         onClick={() => setNewSymptom(prev => ({ ...prev, severity: s as any }))}
-                        className={`p-2 rounded-xl text-xs font-bold border transition-all ${
+                        className={`p-3 text-[10px] font-black uppercase tracking-widest transition-all ${
                           newSymptom.severity === s 
-                            ? 'bg-[#2563eb] text-white border-[#2563eb]' 
-                            : 'bg-white/50 text-[#64748b] border-white/60 hover:bg-white/80'
+                            ? 'bg-[#3e2723] text-white' 
+                            : 'bg-white text-black hover:bg-[#f5f5f5]'
                         }`}
                       >
                         {s}
@@ -544,19 +592,19 @@ export default function App() {
                     ))}
                   </div>
                 </div>
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-0 pt-4 flex-col gap-2">
+                  <button 
+                    type="submit"
+                    className="w-full p-4 bg-[#3e2723] text-white text-xs font-black uppercase tracking-[0.3em] hover:bg-[#2b1b19]"
+                  >
+                    Commit Log
+                  </button>
                   <button 
                     type="button"
                     onClick={() => setShowSymptomForm(false)}
-                    className="flex-1 p-3 rounded-xl font-bold text-[#64748b] hover:bg-white/50 transition-all"
+                    className="w-full p-4 border border-black text-xs font-black uppercase tracking-[0.3em] hover:bg-[#f5f5f5]"
                   >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="flex-1 p-3 rounded-xl font-bold bg-[#2563eb] text-white shadow-lg hover:bg-blue-700 transition-all"
-                  >
-                    Log Entry
+                    Dismiss
                   </button>
                 </div>
               </form>
