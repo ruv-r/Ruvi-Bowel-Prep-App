@@ -106,6 +106,121 @@ const PREP_DATA: Record<PrepType, Instruction[]> = {
   ]
 };
 
+// --- Helper component to render chat messages with elegant markdown support ---
+function RenderChatMessage({ text, role }: { text: string; role: 'user' | 'ai' }) {
+  const isUser = role === 'user';
+  
+  const parseMarkdownToJSX = (inputText: string) => {
+    const safeText = typeof inputText === 'string' ? inputText : '';
+    const lines = safeText.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentList: { type: 'ul' | 'ol'; items: React.ReactNode[] } | null = null;
+
+    const renderTextWithBold = (str: string, key: string) => {
+      const parts = str.split(/\*\*(.*?)\*\*/g);
+      return (
+        <span key={key}>
+          {parts.map((part, index) => {
+            if (index % 2 === 1) {
+              return (
+                <strong 
+                  key={index} 
+                  className={`font-extrabold ${isUser ? 'text-white' : 'text-slate-900 border-none bg-transparent p-0'}`}
+                >
+                  {part}
+                </strong>
+              );
+            }
+            return part;
+          })}
+        </span>
+      );
+    };
+
+    const flushList = (key: string) => {
+      if (!currentList) return;
+      if (currentList.type === 'ul') {
+        elements.push(
+          <ul 
+            key={`ul-${key}`} 
+            className={`list-disc pl-5 my-2 space-y-1 ${isUser ? 'text-white' : 'text-slate-700 font-medium'}`}
+          >
+            {currentList.items}
+          </ul>
+        );
+      } else {
+        elements.push(
+          <ol 
+            key={`ol-${key}`} 
+            className={`list-decimal pl-5 my-2 space-y-1 ${isUser ? 'text-white' : 'text-slate-700 font-medium'}`}
+          >
+            {currentList.items}
+          </ol>
+        );
+      }
+      currentList = null;
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      if (!line.trim()) {
+        flushList(String(i));
+        continue;
+      }
+
+      // Check bullet items starting with *, -, or •
+      const ulMatch = line.match(/^[\*\-\u2022]\s+(.*)$/);
+      if (ulMatch) {
+        if (!currentList || currentList.type !== 'ul') {
+          flushList(String(i));
+          currentList = { type: 'ul', items: [] };
+        }
+        currentList.items.push(
+          <li key={`li-${i}-${currentList.items.length}`} className="text-xs list-item leading-relaxed">
+            {renderTextWithBold(ulMatch[1], `li-text-${i}`)}
+          </li>
+        );
+        continue;
+      }
+
+      // Check ordered list items starting with digits (e.g. 1. )
+      const olMatch = line.match(/^(\d+)\.\s+(.*)$/);
+      if (olMatch) {
+        if (!currentList || currentList.type !== 'ol') {
+          flushList(String(i));
+          currentList = { type: 'ol', items: [] };
+        }
+        currentList.items.push(
+          <li key={`li-${i}-${currentList.items.length}`} className="text-xs list-item leading-relaxed">
+            {renderTextWithBold(olMatch[2], `li-text-${i}`)}
+          </li>
+        );
+        continue;
+      }
+
+      // Plain text - flush list first
+      flushList(String(i));
+
+      elements.push(
+        <p 
+          key={`p-${i}`} 
+          className={`text-xs leading-relaxed min-h-[0.5rem] mb-1.5 ${
+            isUser ? 'text-white font-medium' : 'text-slate-700 font-medium'
+          }`}
+        >
+          {renderTextWithBold(line, `p-text-${i}`)}
+        </p>
+      );
+    }
+
+    flushList('final');
+    return <div className="space-y-1">{elements}</div>;
+  };
+
+  return parseMarkdownToJSX(text);
+}
+
 // --- Main Component ---
 
 export default function App() {
@@ -682,13 +797,13 @@ export default function App() {
                   
                   {/* Chat messages box with absolute fixed constraints and scroll limits */}
                   <div className="flex-grow border border-slate-200/50 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white min-h-0 max-h-[300px]">
-                    {chatHistory.map((msg, i) => (
+                    {chatHistory && Array.isArray(chatHistory) && chatHistory.filter(msg => msg && (msg.text || msg.role)).map((msg, i) => (
                       <div key={i} className={`conversation-bubble ${
                         msg.role === 'user' 
-                          ? 'bubble-user self-end' 
-                          : 'bubble-ai self-start'
+                          ? 'bubble-user self-end text-white' 
+                          : 'bubble-ai self-start text-slate-800'
                       }`}>
-                        {msg.text}
+                        <RenderChatMessage text={msg.text || ''} role={msg.role || 'ai'} />
                       </div>
                     ))}
                     {loading && (
