@@ -749,60 +749,121 @@ Nausea, vomiting, abdominal cramping, flatulence, abdominal bloating, headache, 
 };
 
 export const COCHRANE_REVIEW_SOURCE = `
-COCHRANE SYSTEMATIC REVIEW: CD006330 - BOWEL PREPARATION FOR COLONOSCOPY
-Tan L, Lin ZC, Ma S, Romero L, Warrier S.
+COCHRANE SYSTEMATIC REVIEW: CD006330 - BOWEL PREPARATION FOR PREVENTATIVE, DIAGNOSTIC, OR ELECTIVE COLONOSCOPY IN ADULTS
+Comprehensive Clinical Review: Tan L, Lin ZC, Ma S, Romero L, Warrier S.
 Cochrane Database of Systematic Reviews 2018, Issue 11. Art. No.: CD006330.
 
-OBJECTIVES & STUDY PROTOCOL:
-To assess and compare the efficacy, safety, and tolerance of different bowel preparation regimens used to facilitate elective colonoscopy in adults (18 years and above).
+I. REVIEW BACKGROUND, RESEARCH OBJECTIVES & INCLUSION STANDARDS:
+- Primary Clinical Objective: To assess, evaluate, and critically compare the efficacy (bowel cleanliness), safety (adverse event profiles and electrolyte changes), patient compliance (completion of prep), and tolerability (taste, ease of ingestion, and physiological symptoms) of various bowel preparation regimens used to facilitate elective colonoscopy or surgical bowel procedures in adults aged 18 years and above.
+- Scope of Evidence: Handled synthesis of multiple randomized controlled trials (RCTs) involving tens of thousands of diagnostic and therapeutic patient cases to form definitive medical recommendations.
 
-CLINICAL SIGNIFICANCE OF BOWEL CLEANLINESS:
-1. Impact of Sub-optimal Cleansing: Poor bowel cleanliness is associated with incomplete colonic examinations, inadequate mucosal visualisation, missed lesions (such as adenomas, polyps, or early cancers), prolonged procedure times, and increased rate of procedural complications.
-2. Prevalence: Studies suggest that 10% to 20% (or even more) of all performed colonoscopies are associated with sub-optimal bowel preparation.
-3. Influencing Clinical Factors: Sub-optimal bowel prep can be influenced by participant factors such as:
-   - Older age
-   - Comorbidities
-   - Chronic constipation
-   - Concomitant use of drug treatments that slow colonic transit
+II. THE CRITICAL SIGNIFICANCE OF MAXIMUM BOWEL CLEANLINESS:
+- Consequences of Inadequate / Sub-optimal Cleansing: Poor or failed bowel prep is a major clinical issue, estimated to occur in 10% to 20% (and in some hospital cohorts up to 25%) of all scheduled colonoscopies. Sub-optimal cleanliness lead to:
+  1. Missed Pathologies: Limits visualization of the colonic mucosal wall, leading to missed pre-cancerous flat adenomas, polyps, inflammatory lesions, or early stage colorectal carcinomas.
+  2. Incomplete Examinations: The clinician cannot reach the cecum due to visual obstruction by solid or cloudy fecal material, requiring premature procedural termination.
+  3. Increased Re-procedural Rates: Patients must undergo the bowel prep process and colonoscopy again, which increases patient distress, risk of adverse events, and clinical burden.
+  4. Prolonged Procedure Times: Stretches the sedation window and technical physical difficulty of maneuvering the colonoscope through residual fecal pools.
+  5. Higher Complications Rate: Blind progression of the scope through dirty loops increases risks of physical bowel wall wall trauma or accidental mechanical bowel perforation.
+- Contributing Patient Risk Factors for Poor Cleansing:
+  - Advanced older age (due to colon muscle weakening or sluggish motility).
+  - Pre-existing chronic constipation or history of slow transit.
+  - Concomitant use of oral prescription drugs that delay colonic transit (such as opioids, anticholinergics, calcium channel blockers, or iron supplements).
+  - Underlying comorbidities such as longstanding diabetes mellitus, neurological conditions (stroke, spinal cord injury), history of pelvic surgery, or prior history of sub-optimal bowel preps.
 
-BOWEL CLEANSING AGENTS & MECHANISMS OF ACTION:
-1. Polyethylene Glycol (PEG) based solutions:
-   - Mechanism: Act to clear bowel contents through volume lavage. Standard formulations are iso-osmotic and typically require drinking 4 litres of water.
-   - Fluid Shifts: They are associated with only small fluid shifts.
-   - Safety profile: Considered very safe to use in participants with renal (kidney) disease, cardiac (heart) disease, or advanced liver disease.
-   - Compliance limits: High-volume requirements (4L) often limit patient compliance. Low-volume PEG solutions (usually 2 litres of water) have been developed and widely adopted to assist compliance.
-2. Sodium Phosphate (NaP) based solutions:
-   - Mechanism: Low-volume hyper-osmotic solution that draws fluid into the intestinal lumen osmotically.
-   - Clinical Efficacy: Generally well-tolerated and highly effective.
-   - Contraindications: Due to massive shift of fluid and electrolytes, it is contraindicated in patients with:
-     - Kidney (renal) disease or impairment
-     - Congestive heart failure
-     - Advanced liver disease
-     - Sodium-restricted diets
-3. Sodium Pico-sulphate / Citric Acid / Magnesium Oxide (SPS) based solutions:
-   - Active contents: Sodium picosulfate, magnesium oxide, and citric acid. Note: Citric acid and magnesium oxide react in water to form magnesium citrate.
-   - Mechanism: Sodium picosulfate decreases water and electrolyte absorption while increasing intestinal motility. Magnesium citrate acts as an osmotic laxative, drawing water into the colon to flush out contents. Together they enhance gastrointestinal peristalsis.
+III. PHARMACOLOGICAL CLEANSING AGENTS & THEIR PHYSIOLOGICAL MECHANISMS:
+1. Polyethylene Glycol (PEG) based solutions (e.g., Glycoprep Orange, Plenvu, MoviPrep):
+   - Mechanism of Action: Formulated around Macrogol 3350, PEG-based laxatives are high-molecular-weight polymers that act as osmotic barriers. They do not cross the intestinal membrane, instead binding water molecules closely in the intestinal lumen. Excess water is maintained in the stool, softening fecal material, expanding lumen volume, and inducing peristalsis (bowel muscular movements).
+   - Fluid and Electrolyte Dynamics: Standard formulations are isosmotic. Unlike hyperosmotic agents, PEG is associated with virtual neutrality regarding fluid shifts. It does not pull significant water out of the bloodstream, nor does it cause massive shifts of vital sodium, potassium, or calcium ions.
+   - Clinical Safety Profile: Because they preserve fluid and electrolyte balance, PEG formulations are considered the absolute gold standard and safest option for patients at high clinical risk of sudden fluid or electrolyte failures (e.g., severe renal impairment, chronic heart failure, hepatic cirrhosis with ascites, and elderly/frail individuals).
+   - High-Volume vs. Low-Volume PEG:
+     - High-Volume PEG: Traditional regimens require drinking 4 Litres of water mixed with the PEG powder (such as standard Glycoprep). While extraordinarily safe, the high volume (4L) and poor palatability often lead to patient non-compliance, nausea, vomiting, or premature cessation of the prep.
+     - Low-Volume PEG: Newer regimens combine 2 Litres of PEG with an additional osmotic booster, typically high-dose Ascorbic Acid / Sodium Ascorbate (Vitamin C) or Bisacodyl tablets (e.g., MoviPrep, Plenvu, Glycoprep O-Kit). These formulations are equally effective as 4L PEG in bowel cleanliness, but offer much higher patient compliance and better taste profiles, though they carry slightly higher fluid shift risks due to the Vitamin C salts.
+2. Sodium Picosulfate / Magnesium Citrate / Citric Acid (SPS) based solutions (e.g., Picolax, Picoprep, Picosalax):
+   - Active Composition & Chemical Reaction: Sodium picosulfate, heavy magnesium carbonate (or magnesium oxide), and anhydrous citric acid. When combined in water, citric acid and magnesium carbonate/oxide react dynamically to form Magnesium Citrate, an effervescent chemical reaction that produces transient heat.
+   - Dual-Mechanism Synergy:
+     - Sodium Picosulfate: A stimulant pro-drug metabolized by local bacterial enzymes in the colon into its active form, BHPM. BHPM acts directly on the colonic mucosa to stimulate smooth muscle contractility (peristalsis) while decreasing water absorption in the large intestine.
+     - Magnesium Citrate: A potent, hyperosmotic laxative that osmotically draws large volumes of water from the circulating blood vessels into the intestinal cavity, flushing the bowel clean.
+   - Tolerability and Completion Rates: Because SPS preps require a remarkably small initial volume of active medicine (typically 150 mL to 250 mL of reconstituted mixture per sachet), they have significantly higher patient satisfaction, better taste compliance, and lower rates of general nausea or bloating compared to 4L PEG.
+   - Clinical Risks & Fluid Demand: Because SPS is hyperosmotic, it actively pulls fluids from the body's vascular space into the gut. Without intensive, continuous intake of plain clear fluids (at least 250 mL of approved clear fluid every single hour), patients can suffer rapid intravascular volume depletion, causing severe dehydration, orthostatic hypotension, or sudden clinically silent electrolyte disturbances (most commonly severe hyponatremia and hypokalemia).
+3. Sodium Phosphate (NaP) based solutions (e.g., Fleet Phospho-soda):
+   - Mechanism: A low-volume, highly concentrated hyperosmotic liquid that triggers massive intestinal fluid accumulation.
+   - Efficacy vs. Severe Toxicity: Visually and operationally highly effective, but carries a high risk of "acute phosphate nephropathy" (calcium-phosphate crystal deposition in the renal tubules, leading to permanent, irreversible kidney damage/chronic renal failure) as well as life-threatening hyperphosphatemia, hypocalcemia, and severe hypokalemia.
+   - Clinical Restriction: Due to these severe toxicities, NaP is strictly contraindicated in the elderly, patients with kidney disease, heart failure, liver failure, or those taking ACE-inhibitors or ARBs. It has been largely withdrawn or restricted from routine screening protocols in modern practice.
 
-TIMING & REGIMEN OF BOWEL CONFIGURATIONS:
-1. Split-Dose Schedule: Administering half the dose of bowel preparation the day before the procedure and the remaining half on the day of the procedure.
-2. Efficacy of Splitting: Clinical studies consistently show that Split-Dose bowel preparation is superior to single dose (day-before-only) preparation in achieving adequate bowel cleanliness.
-3. Same-Day Schedule: Same-day bowel preparation on the day of the procedure is also superior to day-before-only preparations.
+IV. SCIENTIFIC EVIDENCE ON TIMING REGIMENS & SCHEDULE DESIGNS:
+The timing of the bowel preparation is the single most critical factor determining success:
+1. Split-Dose Schedule (Gold Standard Scheme):
+   - Definition: The total bowel preparation dose is divided into two halves. Half of the prep (e.g., Dose 1 of a kit) is taken in the late afternoon/evening on the day before the procedure, and the remaining half (e.g., Dose 2 or the final litres) is taken on the morning of the procedure.
+   - Superiority over Day-Before-Only (Single Dose) Schedule: The Cochrane review reports overwhelming scientific evidence that a Split-Dose schedule is clinically superior to a single-dose, day-before-only schedule. The odds ratio of achieving "excellent" or "good" mucosal cleanliness is dramatically higher with split-dosing.
+   - Efficacy Explanation: Fecal matter and mucus continuously flow from the small intestine into the colon. In a day-before-only prep, a "mucous plug" or hazy yellow liquid layer accumulates in the right/proximal colon overnight (during sleep). A morning dose taken on the day of the procedure efficiently flushes this fresh debris, leaving the mucosa pristine.
+   - Patient Tolerability and Sleep: Split-dosing improves completion rate, as patients do not have to consume massive fluid amounts in a single, short evening window. It also reduces overall severity of nausea and nighttime toilet-run frequency.
+2. Same-Day Schedule:
+   - Definition: The entire bowel preparation is taken on the day of the colonoscopy, with the final drink completed 2 to 4 hours prior to the procedure.
+   - Efficacy: Superior to single day-before-only schedules. It is highly effective and recommended for patients undergoing afternoon colonoscopies.
+3. Day-Before-Only (Single Night-Before) Schedule:
+   - Reserved as a secondary option for patients who cannot manage a split-dose or same-day schedule (e.g. long travel distance to the clinic on the morning of the procedure). It has a higher failure rate, particularly in the right side of the colon.
 
-HYDRATION & CLINICAL RECOMMENDATIONS:
-1. Mandatory Hydration: It is clinically well-established that adequate hydration is a critical part of all bowel preparation regimens. Patients must follow clear, structured hydration techniques before, during, and after drinking the bowel cleansing agent to avoid dehydration and electrolyte imbalances.
-2. Adverse Event Profile:
-   - Overall adverse events can affect up to 31.7% of patients undergoing bowel preparation.
-   - Vomiting occurs in up to 20.7% of participants.
-   - Abdominal pain and distension (bloating) occur in up to 20.7% of participants.
-3. Tolerability and Compliance: Adherence is heavily determined by total volume to consume, taste profiles, and ease of drinking.
+V. COMPREHENSIVE CLINICAL SAFETY INDEX & SUB-GROUP ADVICE:
+Before administering any bowel prep, the choice of agent must map precisely to the patient’s comorbidities:
+1. Renal Impairment & Chronic Kidney Disease (CKD):
+   - High Risk: Prone to sudden electrolyte drops (hyponatremia, hyperkalemia) and acute kidney injury from dehydration.
+   - Protocol: Sodium Phosphate (NaP) is strictly contraindicated. Sodium Picosulfate (SPS) must be avoided or monitored with pre-and-post electrolyte blood panels. High-volume isosmotic PEG (without extreme ascorbate boosters) is the safest agent because of its neutral fluid-shift profile.
+2. Heart Failure & Left Ventricular Dysfunction (Cardiac Comorbidities):
+   - High Risk: Patients are extremely sensitive to sodium loading and sudden fluid shifts. Overloading can trigger acute pulmonary edema, congestive heart failure exacerbation, or cardiac arrhythmias.
+   - Protocol: NaP is contraindicated. Low-volume hyperosmotic formulations with exceptionally high sodium loads (such as Plenvu, MoviPrep, or SPS) must be used with severe caution and cardiac monitoring. Standard, stable PEG is the preferred agent.
+3. Hepatic Cirrhosis, portal hypertension & Liver Failure:
+   - High Risk: Fluid shifts can trigger rapid ascites accumulation or hepatic encephalopathy.
+   - Protocol: PEG is the agent of choice. Avoid hyperosmotic preparations (NaP, SPS) that alter vascular volume.
+4. Diabetes Mellitus:
+   - High Risk: Fasting and a strict clear fluid diet can trigger severe hypoglycemia (insulin shock) or ketoacidosis. Diabetics also have a higher incidence of gastroparesis (delayed stomach emptying), leading to severe bloating, nausea, vomiting, and incomplete cleaning due to slow transit.
+   - Protocol: Diabetics must monitor blood glucose levels before, during, and after the prep. If consuming sugary clear fluids (like sweetened black tea, fruit juice, or regular sports drinks) to maintain blood sugar, they must adjust insulin/oral hypoglycemic doses as directed by their physician. Low-carbohydrate or specialized sugar-free clear liquids should be integrated to prevent blood sugar spikes.
+5. G6PD Deficiency:
+   - High Risk: Exposure to high doses of Vitamin C can trigger acute oxidative hemolysis (destruction of red blood cells), presenting as severe anemia, jaundice, and dangerous dark urine.
+   - Protocol: Preparations containing high levels of Ascorbic Acid or Sodium Ascorbate (such as Plenvu and MoviPrep) are strictly contraindicated. Select an alternative prep like Glycoprep Orange or Picosulfate-based options.
+6. Phenylketonuria (PKU):
+   - High Risk: Aspartame is used to sweeten many bowel preps to mask salty tastes. Aspartame is metabolized into phenylalanine, which is highly toxic to patients with PKU.
+   - Protocol: Aspartame-containing preps (such as MoviPrep and Plenvu) are strictly contraindicated in PKU patients. Formulations without aspartame (or using alterative sweeteners) must be selected.
+7. Dysphagia & Impairment of Gag Reflex:
+   - High Risk: Prone to regurgitating or swallowing fluids incorrectly, leading to pulmonary aspiration (fluid in the lungs), which can trigger fatal chemical pneumonia.
+   - Protocol: Strict patient observation during ingestion. Avoid rapid fluid loading.
+8. Inflammatory Bowel Disease (IBD: Crohn's Disease, Ulcerative Colitis) & Colostomies:
+   - High Risk: Prone to localized mucosal irritation, ulcerations (which some preps can artificially mimic or induce), and rapid colonic fluid loss.
+   - Protocol: Gentle PEG-based options are preferred to lower the risk of initiating an acute flare, as compared to hyperosmotic saline preps.
 
-SUBGROUP PATIENTS WITH CO-MORBIDITIES:
-Clinicians must consider alternative preparations or careful monitoring of electrolyte profiles for patients with:
-1. Colostomies or ileostomies (differing colon lengths).
-2. Constipation or bowel diseases like Inflammatory Bowel Disease (IBD: Crohn's disease or Ulcerative Colitis) which cause altered bowel habits and resistance to typical cleaning regimens.
-3. Diabetes mellitus (increased risk of gastroparesis).
-4. Spinal cord injuries (increased risk of gastroparesis).
-5. Renal disease (prone to electrolyte dysfunction and further renal impairment).
-6. Heart disease (prone to fluid overload and heart failure exacerbations).
-7. Advanced liver disease (prone to fluid shifts and electrolyte imbalances).
+VI. RECOGNIZING, MANAGING, AND MITIGATING PHYSIOLOGICAL SIDE EFFECTS:
+Adverse effects are extremely common during bowel prep, affecting up to 31.7% of all patients.
+1. Nausea and Vomiting (Estimated incidence: 10% to 20%):
+   - Trigger: Occurs due to the direct mucosal irritation, hypertonic load, cold fluid temperature, unpleasant taste, or rapid ingestion of a high volume of liquid in a short period.
+   - Clinical Guidance / Mitigation: If the patient feels severely nauseated or active vomiting occurs during ingestion:
+     - Stop drinking the preparation fluid immediately.
+     - Rest or sit quietly for 20 to 30 minutes to allow the stomach to empty and settle.
+     - Drink small sips of clear water during this break.
+     - Restart drinking the preparation at a slower, more gradual rate (e.g., using smaller sips, or extending the interval between glasses to 30 minutes instead of 15 minutes).
+     - Drinking the prep chilled through a straw placed far back on the tongue can bypass tastebuds, reducing the gag reflex.
+2. Abdominal Bloating, Distension & Cramping (Estimated incidence: 20% to 25%):
+   - Trigger: The rapid accumulation of osmotic fluids stretches the intestinal walls, inducing crampy bowel contractions.
+   - Mitigation: Walk around to encourage physical intestinal peristalsis, perform light abdominal massage, or apply a warm compress/heat pad to the belly. Slowing down the rate of fluid intake is also beneficial.
+3. Anal Soreness, Rawness, Irritation & Burning:
+   - Trigger: Watery, highly alkaline clinical diarrheal stools contain active digestive enzymes that physically strip protective skin oils from the perianal area, causing localized burning, redness, or skin tears (fissures).
+   - Mitigation:
+     - Do not wipe the anal area with dry toilet paper. Instead, use soft, alcohol-free wet wipes, a bidet, or gently rinse with warm water in the shower.
+     - Dab the area dry with a soft towel; never rub.
+     - Apply a generous, protective layer of barrier ointment (such as Vaseline, zinc oxide cream, or petroleum jelly) to the perianal skin *before* starting the first dose of the prep, and reapply after every subsequent bowel motion to insulate the skin from the alkaline diarrhea.
+4. Cold Feelings, Shivering, or Chills:
+   - Trigger: Reconstituting powder preps in cold water and drinking large, rapid volumes causes a drop in core visceral temperature.
+   - Mitigation: Wear warm layers, wrap in blankets, or drink warm approved clear fluids (such as hot strained chicken broth or hot black tea/coffee) between bowel prep drinks.
+5. Headaches & Fatigue:
+   - Trigger: Direct side effects of the complete fasting state, lack of carbohydrates, and early-stage systemic dehydration.
+   - Mitigation: Drink sports drinks containing balanced electrolytes and suck on barley sugar candies for energy.
+
+VII. THE ABSOLUTE VITALITY OF CONTINUOUS SYSTEMIC HYDRATION:
+- Standard Hydration Protocol: The bowel preparation process intentionally induces massive, high-velocity watery stools. Each dose of bowel prep acts as a localized vacuum, pulling water out of the vascular system.
+- Risk of Dehydration: If this volume loss is not proactively and continuously replaced, the patient will suffer physical signs of dehydration, including orthostatic hypotension, tachycardia, dizziness, weakness, severe dry mouth, muscle cramps, headache, confusion, or passing out (syncope).
+- Mandatory Action:
+  1. Every patient must drink at least 250 mL of Approved Clear Fluids (in addition to the prescribed bowel prep liquid) every single hour during the preparation phase to maintain cellular and blood volume.
+  2. Hydration must continue actively from the start of the prep until the fasting (Nil by Mouth) safety window begins.
+  3. Inform patients to monitor their urine color: clear, pale straw-colored urine indicates healthy clinical hydration, while dark amber urine is a critical warning sign that they are becoming dehydrated and must immediately increase clear fluid intake.
+- Safety Fasting Limit (Nil by Mouth):
+  - Ingestion of all fluids must stop completely at least 2 hours before the scheduled examination for general liquids (or up to 6 hours as dictated by strict local anesthetic protocols). This prevents accidental vomiting and fatal lung aspiration under procedural sedation.
 `;
+

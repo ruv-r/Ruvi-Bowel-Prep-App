@@ -221,23 +221,50 @@ function RenderChatMessage({ text, role }: { text: string; role: 'user' | 'ai' }
   return parseMarkdownToJSX(text);
 }
 
+// --- Date Formatter Helper ---
+function formatProcedureDate(dateStr: string): string {
+  if (!dateStr) return 'Not configured';
+  const parsed = new Date(dateStr);
+  if (isNaN(parsed.getTime())) return 'Invalid Date';
+  return parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 // --- Main Component ---
 
 export default function App() {
-  const [procDate, setProcDate] = useState(() => localStorage.getItem('procDate') || '');
-  const [prepType, setPrepType] = useState<PrepType | ''>(() => (localStorage.getItem('prepType') as PrepType) || '');
+  const [procDate, setProcDate] = useState(() => {
+    const val = localStorage.getItem('procDate');
+    return (val && val !== 'null' && val !== 'undefined') ? val : '';
+  });
+  const [prepType, setPrepType] = useState<PrepType | ''>(() => {
+    const val = localStorage.getItem('prepType');
+    return (val && val !== 'null' && val !== 'undefined') ? (val as PrepType) : '';
+  });
   // State to check if user has finished setup
-  const [isSetup, setIsSetup] = useState(() => localStorage.getItem('isSetup') === 'true');
+  const [isSetup, setIsSetup] = useState(() => {
+    const setup = localStorage.getItem('isSetup') === 'true';
+    const date = localStorage.getItem('procDate');
+    const type = localStorage.getItem('prepType');
+    const hasDate = date && date !== 'null' && date !== 'undefined';
+    const hasType = type && type !== 'null' && type !== 'undefined';
+    return !!(setup && hasDate && hasType);
+  });
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>(() => {
     try {
       const saved = localStorage.getItem('chatHistory');
-      return saved ? JSON.parse(saved) : [
-        { role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }
-      ];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
     } catch (e) {
-      return [{ role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }];
+      console.error("Failed to parse chatHistory:", e);
     }
+    return [
+      { role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }
+    ];
   });
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -250,10 +277,16 @@ export default function App() {
   const [symptoms, setSymptoms] = useState<SymptomLog[]>(() => {
     try {
       const saved = localStorage.getItem('symptoms');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
     } catch (e) {
-      return [];
+      console.error("Failed to parse symptoms:", e);
     }
+    return [];
   });
   const [showSymptomForm, setShowSymptomForm] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -403,10 +436,13 @@ export default function App() {
   const daysArray = getDaysArray();
 
   // Diff in days from procedure date
-  const targetDateObj = new Date(procDate);
-  targetDateObj.setHours(0, 0, 0, 0);
-  const diffTime = targetDateObj.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const targetDateObj = procDate ? new Date(procDate) : null;
+  const isTargetDateValid = targetDateObj && !isNaN(targetDateObj.getTime());
+  if (targetDateObj && isTargetDateValid) {
+    targetDateObj.setHours(0, 0, 0, 0);
+  }
+  const diffTime = (targetDateObj && isTargetDateValid) ? (targetDateObj.getTime() - today.getTime()) : NaN;
+  const diffDays = isNaN(diffTime) ? NaN : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   const currentDayIndex = daysArray.length > 0 ? daysArray.findIndex(d => {
     const dCopy = new Date(d.date);
@@ -519,7 +555,7 @@ export default function App() {
                 <div className="hidden sm:flex gap-1.5 px-3 py-1.5 bg-[#f4f8f6] rounded-full border border-slate-200/30 items-center">
                   <span className="opacity-60 text-[10px]">Procedure:</span>
                   <span className="text-[#00a28a] font-bold">
-                    {new Date(procDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {formatProcedureDate(procDate)}
                   </span>
                 </div>
                 <button 
