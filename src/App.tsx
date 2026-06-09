@@ -256,6 +256,7 @@ export default function App() {
     }
   });
   const [showSymptomForm, setShowSymptomForm] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [newSymptom, setNewSymptom] = useState({ type: 'Nausea', severity: 'Mild' as const });
 
   useEffect(() => {
@@ -355,6 +356,27 @@ export default function App() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleResetApp = () => {
+    // Clear all localStorage keys used by the app
+    localStorage.removeItem('procDate');
+    localStorage.removeItem('prepType');
+    localStorage.removeItem('isSetup');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('symptoms');
+
+    // Reset React state to initial defaults
+    setProcDate('');
+    setPrepType('');
+    setIsSetup(false);
+    setChatInput('');
+    setChatHistory([
+      { role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }
+    ]);
+    setSymptoms([]);
+    setSelectedDayOverride(null);
+    setShowResetConfirm(false);
   };
 
   const getDaysArray = () => {
@@ -500,6 +522,14 @@ export default function App() {
                     {new Date(procDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
+                <button 
+                  onClick={() => setShowResetConfirm(true)} 
+                  className="px-3.5 py-1.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/40 flex items-center gap-1.5 transition-all duration-200 cursor-pointer text-red-600 font-bold text-xs shadow-sm active:scale-95"
+                  title="Reset App Data"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                  <span>Reset App</span>
+                </button>
                 <button 
                   onClick={() => setIsSetup(false)} 
                   className="w-8 h-8 rounded-full bg-[#f4f8f6] border border-slate-200/40 flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer text-slate-500 hover:text-[#00bfa5]"
@@ -911,6 +941,54 @@ export default function App() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Reset Confirmation Modal */}
+      <AnimatePresence>
+        {showResetConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowResetConfirm(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 15 }}
+              className="bg-white border border-slate-100 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] relative w-full max-w-sm p-8 z-10"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4 border border-red-100">
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                
+                <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight mb-2">Reset App Data?</h3>
+                <p className="text-xs text-slate-500 leading-relaxed mb-6">
+                  This will completely clear your clinical schedule configuration, delete all logged symptoms, and erase your chat interaction history with the Protocol Assistant.<br /><br />
+                  <strong>This action is irreversible.</strong> Are you sure you want to proceed?
+                </p>
+
+                <div className="flex flex-col gap-2 w-full">
+                  <button 
+                    onClick={handleResetApp}
+                    className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
+                  >
+                    Yes, Reset Everything
+                  </button>
+                  <button 
+                    onClick={() => setShowResetConfirm(false)}
+                    className="w-full py-3.5 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}
