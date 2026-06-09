@@ -70,10 +70,10 @@ Provide your professional RAG-secured response:`;
       });
 
       res.json({ text: response.text });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Server Gemini API Error:", error);
       res.json({
-        text: "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later or contact your doctor for urgent questions."
+        text: `I'm sorry, I'm having trouble connecting to my knowledge base right now. (Error: ${error?.message || error || "Unknown Error"}). Please ensure your GEMINI_API_KEY is configured in the Settings > Secrets tab and try again.`
       });
     }
   });

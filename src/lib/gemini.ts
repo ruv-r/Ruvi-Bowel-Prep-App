@@ -10,13 +10,13 @@ export async function askPrepAI(question: string, prepType: string): Promise<str
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || "Failed to fetch AI assistant reply");
+      return `Server Error: ${errorText || "Failed to fetch AI assistant reply"}`;
     }
 
     const data = await response.json();
     return data.text || "No response received";
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI Assistant network error:", error);
-    return "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later or contact your doctor for urgent questions.";
+    return `Connection Error: ${error?.message || "Could not reach the server"}. Please try again later or contact your doctor for urgent questions.`;
   }
 }
