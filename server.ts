@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
-import { RAG_SOURCES } from "./src/lib/rag_sources";
+import { RAG_SOURCES, COCHRANE_REVIEW_SOURCE } from "./src/lib/rag_sources";
 
 async function startServer() {
   const app = express();
@@ -100,20 +100,28 @@ async function startServer() {
       });
 
       const sourceDocument = RAG_SOURCES[prepType] || "No source document available for this preparation.";
+      const cochraneDocument = COCHRANE_REVIEW_SOURCE;
 
       const systemInstruction = `You are a clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
 The patient is using the preparation kit: "${prepType}".
 
-To ensure absolute safety and medical accuracy, you MUST ONLY answer the patient's question using the facts, steps, warnings, and guidelines provided within the official Consumer Medicine Information (CMI) document context below.
+To ensure absolute safety, scientific rigor, and clinical accuracy, you MUST ONLY answer the patient's question based on facts, steps, warnings, outcomes, and guidelines from these two specific official sources:
+1. Consumer Medicine Information (CMI) specific to the patient's kit: "${prepType}"
+2. Cochrane Systematic Review (CD006330) regarding Bowel Preparation for Colonoscopy (applicable across all different kits)
 
 ---------------------------------
 OFFICIAL CMI DOCUMENT CONTEXT FOR ${prepType.toUpperCase()}:
 ${sourceDocument}
 ---------------------------------
 
+---------------------------------
+UNIVERSAL COCHRANE SYSTEMATIC REVIEW (CD006330) CONTEXT:
+${cochraneDocument}
+---------------------------------
+
 CRITICAL MEDICAL & DESIGN CONSTRAINTS:
-1. STRICT TRUTH & RAG SCOPE: Your knowledge is strictly constrained to the text in the CMI document context above. You are FORBIDDEN from bringing in external clinical guidance, alternative timelines, or medical knowledge not present in this document. 
-2. UNKNOWN INFORMATION PROTOCOL: If the answer to the patient's question is not directly mentioned in the provided text, or if there is any ambiguity, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}". To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
+1. STRICT TRUTH & RAG SCOPE: Your knowledge is strictly constrained to the text in the CMI document context and Cochrane Systematic Review context provided above. You are FORBIDDEN from bringing in external clinical guidance, alternative timelines, or medical knowledge not present in these documents. If information is present in both, prioritize the specific details from the kit's CMI document, while supplementing with relevant general facts or comparative insights from the Cochrane review.
+2. UNKNOWN INFORMATION PROTOCOL: If the answer to the patient's question is not directly mentioned in either of the provided texts, or if there is any ambiguity, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}" or the Cochrane Review. To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
 3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
 4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.`;
 

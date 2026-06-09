@@ -296,3 +296,62 @@ FASTING AND LIMITS:
 - Recommended Clear Fluids: water, soups, clear broth, pulp-free juice, tea/coffee without milk, clear cordials. Avoid anything colored red or purple.
   `
 };
+
+export const COCHRANE_REVIEW_SOURCE = `
+COCHRANE SYSTEMATIC REVIEW: CD006330 - BOWEL PREPARATION FOR COLONOSCOPY
+Tan L, Lin ZC, Ma S, Romero L, Warrier S.
+Cochrane Database of Systematic Reviews 2018, Issue 11. Art. No.: CD006330.
+
+OBJECTIVES & STUDY PROTOCOL:
+To assess and compare the efficacy, safety, and tolerance of different bowel preparation regimens used to facilitate elective colonoscopy in adults (18 years and above).
+
+CLINICAL SIGNIFICANCE OF BOWEL CLEANLINESS:
+1. Impact of Sub-optimal Cleansing: Poor bowel cleanliness is associated with incomplete colonic examinations, inadequate mucosal visualisation, missed lesions (such as adenomas, polyps, or early cancers), prolonged procedure times, and increased rate of procedural complications.
+2. Prevalence: Studies suggest that 10% to 20% (or even more) of all performed colonoscopies are associated with sub-optimal bowel preparation.
+3. Influencing Clinical Factors: Sub-optimal bowel prep can be influenced by participant factors such as:
+   - Older age
+   - Comorbidities
+   - Chronic constipation
+   - Concomitant use of drug treatments that slow colonic transit
+
+BOWEL CLEANSING AGENTS & MECHANISMS OF ACTION:
+1. Polyethylene Glycol (PEG) based solutions:
+   - Mechanism: Act to clear bowel contents through volume lavage. Standard formulations are iso-osmotic and typically require drinking 4 litres of water.
+   - Fluid Shifts: They are associated with only small fluid shifts.
+   - Safety profile: Considered very safe to use in participants with renal (kidney) disease, cardiac (heart) disease, or advanced liver disease.
+   - Compliance limits: High-volume requirements (4L) often limit patient compliance. Low-volume PEG solutions (usually 2 litres of water) have been developed and widely adopted to assist compliance.
+2. Sodium Phosphate (NaP) based solutions:
+   - Mechanism: Low-volume hyper-osmotic solution that draws fluid into the intestinal lumen osmotically.
+   - Clinical Efficacy: Generally well-tolerated and highly effective.
+   - Contraindications: Due to massive shift of fluid and electrolytes, it is contraindicated in patients with:
+     - Kidney (renal) disease or impairment
+     - Congestive heart failure
+     - Advanced liver disease
+     - Sodium-restricted diets
+3. Sodium Pico-sulphate / Citric Acid / Magnesium Oxide (SPS) based solutions:
+   - Active contents: Sodium picosulfate, magnesium oxide, and citric acid. Note: Citric acid and magnesium oxide react in water to form magnesium citrate.
+   - Mechanism: Sodium picosulfate decreases water and electrolyte absorption while increasing intestinal motility. Magnesium citrate acts as an osmotic laxative, drawing water into the colon to flush out contents. Together they enhance gastrointestinal peristalsis.
+
+TIMING & REGIMEN OF BOWEL CONFIGURATIONS:
+1. Split-Dose Schedule: Administering half the dose of bowel preparation the day before the procedure and the remaining half on the day of the procedure.
+2. Efficacy of Splitting: Clinical studies consistently show that Split-Dose bowel preparation is superior to single dose (day-before-only) preparation in achieving adequate bowel cleanliness.
+3. Same-Day Schedule: Same-day bowel preparation on the day of the procedure is also superior to day-before-only preparations.
+
+HYDRATION & CLINICAL RECOMMENDATIONS:
+1. Mandatory Hydration: It is clinically well-established that adequate hydration is a critical part of all bowel preparation regimens. Patients must follow clear, structured hydration techniques before, during, and after drinking the bowel cleansing agent to avoid dehydration and electrolyte imbalances.
+2. Adverse Event Profile:
+   - Overall adverse events can affect up to 31.7% of patients undergoing bowel preparation.
+   - Vomiting occurs in up to 20.7% of participants.
+   - Abdominal pain and distension (bloating) occur in up to 20.7% of participants.
+3. Tolerability and Compliance: Adherence is heavily determined by total volume to consume, taste profiles, and ease of drinking.
+
+SUBGROUP PATIENTS WITH CO-MORBIDITIES:
+Clinicians must consider alternative preparations or careful monitoring of electrolyte profiles for patients with:
+1. Colostomies or ileostomies (differing colon lengths).
+2. Constipation or bowel diseases like Inflammatory Bowel Disease (IBD: Crohn's disease or Ulcerative Colitis) which cause altered bowel habits and resistance to typical cleaning regimens.
+3. Diabetes mellitus (increased risk of gastroparesis).
+4. Spinal cord injuries (increased risk of gastroparesis).
+5. Renal disease (prone to electrolyte dysfunction and further renal impairment).
+6. Heart disease (prone to fluid overload and heart failure exacerbations).
+7. Advanced liver disease (prone to fluid shifts and electrolyte imbalances).
+`;
