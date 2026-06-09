@@ -2,5 +2,7 @@
   "name": "BowelPreppr",
   "description": "A minimalist interactive calendar and AI assistant for colonoscopy bowel preparation.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
