@@ -224,10 +224,10 @@ function RenderChatMessage({ text, role }: { text: string; role: 'user' | 'ai' }
 // --- Main Component ---
 
 export default function App() {
-  const [procDate, setProcDate] = useState('');
-  const [prepType, setPrepType] = useState<PrepType | ''>('');
+  const [procDate, setProcDate] = useState(() => localStorage.getItem('procDate') || '');
+  const [prepType, setPrepType] = useState<PrepType | ''>(() => (localStorage.getItem('prepType') as PrepType) || '');
   // State to check if user has finished setup
-  const [isSetup, setIsSetup] = useState(false);
+  const [isSetup, setIsSetup] = useState(() => localStorage.getItem('isSetup') === 'true');
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>(() => {
     try {

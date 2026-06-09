@@ -82,6 +82,8 @@ async function startServer() {
         });
       }
 
+      console.log(`[Chat Endpoint] Incoming request - prepType: "${prepType}", question: "${question}"`);
+
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         return res.json({
@@ -99,8 +101,12 @@ async function startServer() {
         }
       });
 
-      const sourceDocument = RAG_SOURCES[prepType] || "No source document available for this preparation.";
+      const cleanPrepType = String(prepType || '').trim();
+      const sourceDocument = RAG_SOURCES[cleanPrepType] || RAG_SOURCES[prepType] || "No source document available for this preparation.";
       const cochraneDocument = COCHRANE_REVIEW_SOURCE;
+
+      console.log(`[Chat Endpoint] Context Loaded: sourceDocument Length = ${sourceDocument.length} chars, cochraneDocument Length = ${cochraneDocument.length} chars`);
+      console.log(`[Chat Endpoint] sourceDocument snippet: "${sourceDocument.substring(0, 150).replace(/\n/g, ' ')}..."`);
 
       const systemInstruction = `You are a clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
 The patient is using the preparation kit: "${prepType}".
@@ -121,7 +127,7 @@ ${cochraneDocument}
 
 CRITICAL MEDICAL & DESIGN CONSTRAINTS:
 1. STRICT TRUTH & RAG SCOPE: Your knowledge is strictly constrained to the text in the CMI document context and Cochrane Systematic Review context provided above. You are FORBIDDEN from bringing in external clinical guidance, alternative timelines, or medical knowledge not present in these documents. If information is present in both, prioritize the specific details from the kit's CMI document, while supplementing with relevant general facts or comparative insights from the Cochrane review.
-2. UNKNOWN INFORMATION PROTOCOL: If the answer to the patient's question is not directly mentioned in either of the provided texts, or if there is any ambiguity, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}" or the Cochrane Review. To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
+2. UNKNOWN INFORMATION PROTOCOL: If the patient's question cannot be answered using the facts and instructions contained in the provided texts, or if the provided texts do not mention the topic of the query, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}" or the Cochrane Review. To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
 3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
 4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.`;
 
