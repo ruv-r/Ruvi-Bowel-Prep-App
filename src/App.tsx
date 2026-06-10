@@ -21,7 +21,8 @@ import {
   Lock,
   Compass,
   FileCode,
-  ShieldAlert
+  ShieldAlert,
+  Bot
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { askPrepAI } from './lib/gemini';
@@ -294,7 +295,7 @@ export default function App() {
       console.error("Failed to parse chatHistory:", e);
     }
     return [
-      { role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }
+      { role: 'ai', text: 'Hello! I am Prep Bud, your friendly clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling. I am here to help you through this step-by-step!' }
     ];
   });
   const [loading, setLoading] = useState(false);
@@ -444,7 +445,7 @@ export default function App() {
     setIsSetup(false);
     setChatInput('');
     setChatHistory([
-      { role: 'ai', text: 'Hello! I am your clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling.' }
+      { role: 'ai', text: 'Hello! I am Prep Bud, your friendly clinical protocol assistant. Ask me any question regarding your dietary limits, dosage, or scheduling. I am here to help you through this step-by-step!' }
     ]);
     setSymptoms([]);
     setSelectedDayOverride(null);
@@ -953,8 +954,8 @@ export default function App() {
                 {/* AI Assistant Chat Panel */}
                 <div className="p-6 flex-grow flex flex-col min-h-0 bg-[#fbfdfc]">
                   <header className="flex items-center gap-2 font-black uppercase text-[12px] text-slate-800 mb-4">
-                    <MessageSquare className="w-4 h-4 text-[#00a28a]" />
-                    Protocol Assistant
+                    <Bot className="w-4 h-4 text-[#00a28a]" />
+                    Prep Bud
                   </header>
                   
                   {/* Chat messages box with absolute fixed constraints and scroll limits */}
@@ -1109,7 +1110,7 @@ export default function App() {
                 
                 <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight mb-2">Reset App Data?</h3>
                 <p className="text-xs text-slate-500 leading-relaxed mb-6">
-                  This will completely clear your clinical schedule configuration, delete all logged symptoms, and erase your chat interaction history with the Protocol Assistant.<br /><br />
+                  This will completely clear your clinical schedule configuration, delete all logged symptoms, and erase your chat interaction history with Prep Bud.<br /><br />
                   <strong>This action is irreversible.</strong> Are you sure you want to proceed?
                 </p>
 
