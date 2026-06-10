@@ -237,20 +237,45 @@ function formatProcedureDate(dateStr: string): string {
 
 // --- Main Component ---
 
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn("Storage access denied:", e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn("Storage write denied:", e);
+    }
+  },
+  removeItem: (key: string): void => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn("Storage remove denied:", e);
+    }
+  }
+};
+
 export default function App() {
   const [procDate, setProcDate] = useState(() => {
-    const val = localStorage.getItem('procDate');
+    const val = safeLocalStorage.getItem('procDate');
     return (val && val !== 'null' && val !== 'undefined') ? val : '';
   });
   const [prepType, setPrepType] = useState<PrepType | ''>(() => {
-    const val = localStorage.getItem('prepType');
+    const val = safeLocalStorage.getItem('prepType');
     return (val && val !== 'null' && val !== 'undefined') ? (val as PrepType) : '';
   });
   // State to check if user has finished setup
   const [isSetup, setIsSetup] = useState(() => {
-    const setup = localStorage.getItem('isSetup') === 'true';
-    const date = localStorage.getItem('procDate');
-    const type = localStorage.getItem('prepType');
+    const setup = safeLocalStorage.getItem('isSetup') === 'true';
+    const date = safeLocalStorage.getItem('procDate');
+    const type = safeLocalStorage.getItem('prepType');
     const hasDate = date && date !== 'null' && date !== 'undefined';
     const hasType = type && type !== 'null' && type !== 'undefined';
     return !!(setup && hasDate && hasType);
@@ -258,7 +283,7 @@ export default function App() {
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', text: string }[]>(() => {
     try {
-      const saved = localStorage.getItem('chatHistory');
+      const saved = safeLocalStorage.getItem('chatHistory');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -283,7 +308,7 @@ export default function App() {
   // Symptom Tracking State
   const [symptoms, setSymptoms] = useState<SymptomLog[]>(() => {
     try {
-      const saved = localStorage.getItem('symptoms');
+      const saved = safeLocalStorage.getItem('symptoms');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -300,11 +325,11 @@ export default function App() {
   const [newSymptom, setNewSymptom] = useState({ type: 'Nausea', severity: 'Mild' as const });
 
   useEffect(() => {
-    localStorage.setItem('procDate', procDate);
-    localStorage.setItem('prepType', prepType);
-    localStorage.setItem('isSetup', String(isSetup));
-    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    localStorage.setItem('symptoms', JSON.stringify(symptoms));
+    safeLocalStorage.setItem('procDate', procDate);
+    safeLocalStorage.setItem('prepType', prepType);
+    safeLocalStorage.setItem('isSetup', String(isSetup));
+    safeLocalStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    safeLocalStorage.setItem('symptoms', JSON.stringify(symptoms));
   }, [procDate, prepType, isSetup, chatHistory, symptoms]);
 
   useEffect(() => {
@@ -407,11 +432,11 @@ export default function App() {
 
   const handleResetApp = () => {
     // Clear all localStorage keys used by the app
-    localStorage.removeItem('procDate');
-    localStorage.removeItem('prepType');
-    localStorage.removeItem('isSetup');
-    localStorage.removeItem('chatHistory');
-    localStorage.removeItem('symptoms');
+    safeLocalStorage.removeItem('procDate');
+    safeLocalStorage.removeItem('prepType');
+    safeLocalStorage.removeItem('isSetup');
+    safeLocalStorage.removeItem('chatHistory');
+    safeLocalStorage.removeItem('symptoms');
 
     // Reset React state to initial defaults
     setProcDate('');
@@ -701,11 +726,8 @@ export default function App() {
                   </p>
                 </div>
 
-                {/* Helpful Contact Banner */}
-                <div className="health-card bg-gradient-to-tr from-[#00bfa5]/10 to-[#00a28a]/5 p-5 border border-teal-200/20 flex flex-col gap-1 rounded-2xl">
-                  <span className="text-[9px] font-extrabold uppercase text-[#00a28a] tracking-widest">Medical Disclaimer</span>
-                  <span className="text-[11px] text-slate-700 leading-relaxed mt-1">If you experience severe pain, bleeding, or extreme dehydration, call your physician's hotline immediately.</span>
-                </div>
+
+                {/* Helpful Contact Banner removed from sidebar */}
               </aside>
 
               {/* Middle Column: Instructions, countdown circular tracker widget */}
@@ -858,6 +880,12 @@ export default function App() {
                     <div className="py-20 text-center uppercase tracking-widest font-black opacity-20">Loading Instructions...</div>
                   )}
 
+                </div>
+
+                {/* Medical Disclaimer (amber-styled) */}
+                <div className="p-5 bg-amber-50/80 border border-amber-200/80 text-amber-800 rounded-2xl flex flex-col gap-1 shadow-[0_2px_10px_rgba(245,158,11,0.03)] animate-fade-in shrink-0">
+                  <span className="text-[10px] font-extrabold uppercase text-amber-600 tracking-wider">Medical Disclaimer</span>
+                  <span className="text-xs font-semibold leading-relaxed">If you experience severe pain, bleeding, or extreme dehydration, call your physician's hotline immediately.</span>
                 </div>
               </section>
 
