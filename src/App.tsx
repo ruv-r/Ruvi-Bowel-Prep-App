@@ -236,6 +236,16 @@ function formatProcedureDate(dateStr: string): string {
   return parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// --- Local Datetime Helper for datetime-local value ---
+function getLocalDatetimeString(date: Date = new Date()): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
 // --- Main Component ---
 
 const safeLocalStorage = {
@@ -324,6 +334,8 @@ export default function App() {
   const [showSymptomForm, setShowSymptomForm] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [newSymptom, setNewSymptom] = useState({ type: 'Nausea', severity: 'Mild' as const });
+  const [customSymptom, setCustomSymptom] = useState('');
+  const [logDateTime, setLogDateTime] = useState('');
 
   useEffect(() => {
     safeLocalStorage.setItem('procDate', procDate);
@@ -397,15 +409,29 @@ export default function App() {
 
   const logSymptom = (e: React.FormEvent) => {
     e.preventDefault();
-    const now = new Date();
+    const selectedDate = logDateTime ? new Date(logDateTime) : new Date();
+    let finalTimestamp = isNaN(selectedDate.getTime()) ? Date.now() : selectedDate.getTime();
+    
+    // Safety check: ensure we don't log a future timestamp
+    const nowTimestamp = Date.now();
+    if (finalTimestamp > nowTimestamp) {
+      finalTimestamp = nowTimestamp;
+    }
+    
+    const finalDateObj = new Date(finalTimestamp);
+
+    const isOther = newSymptom.type === 'Other';
+    const displayType = isOther && customSymptom.trim() ? customSymptom.trim() : newSymptom.type;
+
     const entry: SymptomLog = {
       id: Math.random().toString(36).substr(2, 9),
-      type: newSymptom.type,
+      type: displayType,
       severity: newSymptom.severity,
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      timestamp: now.getTime()
+      time: finalDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: finalTimestamp
     };
     setSymptoms(prev => [entry, ...prev]);
+    setCustomSymptom('');
     setShowSymptomForm(false);
   };
 
@@ -902,7 +928,12 @@ export default function App() {
                     </div>
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => setShowSymptomForm(true)}
+                        onClick={() => {
+                          setLogDateTime(getLocalDatetimeString());
+                          setCustomSymptom('');
+                          setNewSymptom({ type: 'Nausea', severity: 'Mild' });
+                          setShowSymptomForm(true);
+                        }}
                         className="py-1 px-3 bg-gradient-to-r from-[#00bfa5] to-[#00a28a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer"
                       >
                         Add
@@ -932,7 +963,9 @@ export default function App() {
                                 {s.severity}
                               </span>
                             </div>
-                            <div className="text-[9px] text-slate-400 font-semibold">{s.time}</div>
+                            <div className="text-[9px] text-slate-400 font-semibold">
+                              {new Date(s.timestamp || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at {s.time}
+                            </div>
                           </div>
                           <button 
                             onClick={() => deleteSymptom(s.id)}
@@ -1031,7 +1064,6 @@ export default function App() {
               exit={{ opacity: 0, y: 15 }}
               className="bg-white border border-slate-100 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative w-full max-w-sm p-10 z-10"
             >
-              <h3 className="text-lg font-black mb-6 uppercase tracking-tight text-slate-800">Log Interaction</h3>
               <form onSubmit={logSymptom} className="space-y-6">
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Symptom Type</label>
@@ -1049,6 +1081,41 @@ export default function App() {
                     <option>Other</option>
                   </select>
                 </div>
+
+                {newSymptom.type === 'Other' && (
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Describe Symptom</label>
+                    <textarea 
+                      required
+                      value={customSymptom}
+                      maxLength={250}
+                      onChange={(e) => {
+                        setCustomSymptom(e.target.value.slice(0, 250));
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      placeholder="Detail your symptom(s) here..."
+                      className="w-full border border-slate-200 focus:border-[#00bfa5] rounded-xl p-3 text-xs outline-none bg-white font-medium transition-all resize-none overflow-hidden leading-relaxed min-h-[60px]"
+                    />
+                    <div className="flex justify-between items-center mt-1 text-[9px] text-slate-400 font-semibold">
+                      <span>Maximum 250 characters</span>
+                      <span>{customSymptom.length} / 250</span>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Occurrence Date & Time</label>
+                  <input 
+                    type="datetime-local"
+                    className="w-full p-2.5 border border-slate-200 rounded-xl outline-none bg-white font-bold text-xs text-slate-800 cursor-pointer"
+                    value={logDateTime}
+                    onChange={(e) => setLogDateTime(e.target.value)}
+                    max={getLocalDatetimeString()}
+                    required
+                  />
+                </div>
+
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Intensity</label>
                   <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
@@ -1073,7 +1140,7 @@ export default function App() {
                     type="submit"
                     className="w-full py-3.5 bg-gradient-to-r from-[#00bfa5] to-[#00a28a] text-white text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer"
                   >
-                    Commit Log
+                    ADD SYMPTOM
                   </button>
                   <button 
                     type="button"
