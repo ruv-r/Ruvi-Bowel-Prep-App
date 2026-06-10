@@ -268,6 +268,7 @@ export default function App() {
   });
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [timeRemaining, setTimeRemaining] = useState('');
 
   // Timeline & active-view selection
@@ -303,6 +304,13 @@ export default function App() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 180)}px`;
+    }
+  }, [chatInput]);
 
   useEffect(() => {
     if (!procDate) return;
@@ -881,19 +889,26 @@ export default function App() {
                   </div>
  
                   <form onSubmit={askAI} className="flex flex-col gap-2 shrink-0">
-                    <input 
-                      type="text"
+                    <textarea 
+                      ref={textareaRef}
+                      rows={1}
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Ask me a question"
-                      className="w-full border border-slate-200 focus:border-[#00bfa5] rounded-xl p-3 text-xs outline-none bg-white font-medium transition-all"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          askAI(e);
+                        }
+                      }}
+                      placeholder="Ask a question (Enter to send, Shift+Enter for new line)"
+                      className="w-full border border-slate-200 focus:border-[#00bfa5] rounded-xl p-3 text-xs outline-none bg-white font-medium transition-all resize-none custom-scrollbar min-h-[42px] max-h-[180px] overflow-y-auto leading-relaxed"
                     />
                     <button 
                       type="submit"
                       disabled={loading || !chatInput.trim()}
-                      className="bg-gradient-to-r from-[#00bfa5] to-[#00a28a] text-white p-3 hover:opacity-95 transition-all text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer shadow-sm disabled:opacity-50"
+                      className="bg-gradient-to-r from-[#00bfa5] to-[#00a28a] text-white p-3 hover:opacity-95 transition-all text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer shadow-sm disabled:opacity-50 space-x-1"
                     >
-                      Send Message
+                      <span>Send Message</span>
                     </button>
                   </form>
                   <div className="flex items-center justify-center gap-1.5 mt-3 text-[9px] uppercase tracking-wider font-extrabold text-[#00a28a] opacity-65">
