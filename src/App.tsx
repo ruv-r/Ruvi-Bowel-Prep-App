@@ -657,6 +657,21 @@ export default function App() {
               
               {/* Left Column: Layman-friendly educational panel */}
               <aside className="border-r border-teal-500/10 flex flex-col gap-5 p-6 overflow-y-auto custom-scrollbar bg-white/70 backdrop-blur-md">
+                {prepType !== 'Other' && (
+                  <div className="health-card p-6 flex flex-col gap-3 bg-teal-50/50 border border-teal-200/45 rounded-2xl">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 bg-teal-100/60 rounded-lg flex items-center justify-center text-[#00a28a] shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="text-[11px] uppercase tracking-wider font-extrabold text-[#00a28a]">Official Leaflet</div>
+                    </div>
+                    <h3 className="font-bold text-md text-slate-800 tracking-tight">Consumer Information</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Click <a href="https://shop.bowelcanceraustralia.org/collections/bowel-prep-consumer-medicine-information-download-only?srsltid=AfmBOooQmJg0lwyGFluPAgmGgOsvuvSuJmNAmYja9hPJ5Nd0p_A7c1uV" target="_blank" rel="noopener noreferrer" className="text-[#00a28a] hover:text-[#00bfa5] underline font-bold cursor-pointer inline-flex items-center gap-0.5">here</a> to download the Consumer Medicine Information booklet.
+                    </p>
+                  </div>
+                )}
+
                 <div className="health-card p-6 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-teal-50 rounded-lg flex items-center justify-center text-[#00a28a] shrink-0">
