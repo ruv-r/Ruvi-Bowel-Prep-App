@@ -28,7 +28,7 @@ import { askPrepAI } from './lib/gemini';
 
 // --- Types & Data ---
 
-type PrepType = 'Glycoprep O-Kit' | 'Glycoprep Orange' | 'MoviPrep' | 'Picolax' | 'Picoprep Orange' | 'Picosalax' | 'Plenvu' | 'Prepkit Orange';
+type PrepType = 'Glycoprep O-Kit' | 'Glycoprep Orange' | 'MoviPrep' | 'Picolax' | 'Picoprep Orange' | 'Picosalax' | 'Plenvu' | 'Prepkit Orange' | 'Other';
 
 interface Instruction {
   day: number; // Days before procedure
@@ -103,6 +103,12 @@ const PREP_DATA: Record<PrepType, Instruction[]> = {
     { day: 1, title: 'Step 2: Glycoprep Orange (~6:00 PM)', content: 'Mix Glycoprep sachet in 1L of water. Drink slowly over 1 hour. If nauseated, reduce rate of intake. Remain close to a toilet.', type: 'medication' },
     { day: 1, title: 'Step 3: Picoprep Orange (~9:00 PM)', content: 'Mix second Picoprep sachet in 250 mL warm water. Drink followed by a glass of water. Continue clear fluids until bedtime.', type: 'medication' },
     { day: 0, title: 'Pre-Procedure fluid fast', content: 'No food, water, or drink should be taken starting exactly 2 hours prior to your scheduled examination.', type: 'warning' },
+  ],
+  'Other': [
+    { day: 7, title: 'Low Fiber Diet General Guidelines', content: 'Reduce dietary fiber. Avoid heavy whole grains, nuts, seeds, skin-on fresh fruits, and raw vegetables to begin preparing the bowel tract.', type: 'diet' },
+    { day: 1, title: 'Clear Fluids Only Day', content: 'Stop all solid food and milk/dairy. Drink only approved clear liquids (water, clear strained broth, black coffee/tea without milk, plain pale gelatin, clear apple/pear juice) and stay well hydrated.', type: 'diet' },
+    { day: 1, title: 'Bowel Prep Dose Administration', content: 'Mix and take your specific prescribed bowel preparation kit exactly as directed by your prescribing doctor, healthcare provider, or pharmacist.', type: 'medication' },
+    { day: 0, title: 'Standard Fasting Protocol', content: 'Stop drinking all clear liquids and water completely at least 2 hours prior to your scheduled examination time (or precisely as advised by your local provider).', type: 'warning' },
   ]
 };
 
@@ -528,6 +534,15 @@ export default function App() {
                   </div>
                 </div>
 
+                {prepType === 'Other' && (
+                  <div className="p-3 bg-amber-50/80 border border-amber-100 rounded-xl text-[11px] text-amber-800 leading-normal flex gap-2 animate-fade-in">
+                    <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Notice:</strong> This schedule will use generalized clinical guidelines. Always confirm precise instructions with your doctor.
+                    </span>
+                  </div>
+                )}
+
                 <button 
                   type="submit" 
                   className="w-full py-4 text-xs font-bold uppercase tracking-widest text-white transition-all duration-200 health-button active:scale-[0.98] mt-3"
@@ -786,6 +801,16 @@ export default function App() {
                           </span>
                         )}
                       </header>
+
+                      {prepType === 'Other' && (
+                        <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)] animate-pulse">
+                          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                          <div className="text-xs">
+                            <span className="font-extrabold uppercase tracking-wider block mb-1">GENERALIZED PROTOCOL NOTICE</span>
+                            The timelines and instructions shown under "Other" are generalized dietary recommendations and are not specific to any particular bowel preparation kit. <strong>Please take this information with a grain of salt</strong> and strictly confirm your dosing timeline and clear fluid constraints with your clinical provider or doctor.
+                          </div>
+                        </div>
+                      )}
 
                       <div className="space-y-5">
                         {activeDay.instructions.length > 0 ? (

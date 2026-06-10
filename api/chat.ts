@@ -95,10 +95,30 @@ export default async function handler(req: any, res: any) {
     });
 
     const cleanPrepType = String(prepType || '').trim();
+    const isOther = cleanPrepType.toLowerCase() === 'other';
     const sourceDocument = RAG_SOURCES[cleanPrepType] || RAG_SOURCES[prepType] || "No source document available for this preparation.";
     const cochraneDocument = COCHRANE_REVIEW_SOURCE;
 
-    const systemInstruction = `You are a clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
+    let systemInstruction = "";
+    if (isOther) {
+      systemInstruction = `You are a clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
+The patient is using a customized or unspecified bowel prep kit (referred to as "Other").
+
+To ensure absolute safety, scientific rigor, and clinical accuracy, you MUST ONLY answer the patient's question based on facts, steps, warnings, outcomes, and guidelines from this specific official source:
+1. Cochrane Systematic Review (CD006330) regarding Bowel Preparation for Colonoscopy (applicable as general medical consensus across all preparations)
+
+CRITICAL MEDICAL & DESIGN CONSTRAINTS:
+1. STRICT TRUTH & COCHRANE SCOPE: Your knowledge is strictly constrained to the text in the Cochrane Systematic Review context provided below. Because the patient is using "Other" (or a non-standard custom kit), you DO NOT have a specific Consumer Medicine Information (CMI) document. You are FORBIDDEN from assuming dosing intervals or bringing in external clinical guidance, brand-specific timelines, or medical knowledge not present in the Cochrane review.
+2. UNKNOWN INFORMATION PROTOCOL: If the patient asks about specific brand dosing times, sachet ingredients, mixing procedures, or if the question cannot be answered using the facts and instructions contained in the provided Cochrane text, you must politely respond: "I cannot find specific details regarding that in the universal Cochrane Review. Since you are not using a standard predefined prep kit, I do not have a specific manufacturer leaflet to draw from. To ensure your prep is safe and successful, please check your specific kit's box or contact your doctor's office directly."
+3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
+4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.
+
+---------------------------------
+UNIVERSAL COCHRANE SYSTEMATIC REVIEW (CD006330) CONTEXT:
+${cochraneDocument}
+---------------------------------`;
+    } else {
+      systemInstruction = `You are a clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
 The patient is using the preparation kit: "${prepType}".
 
 To ensure absolute safety, scientific rigor, and clinical accuracy, you MUST ONLY answer the patient's question based on facts, steps, warnings, outcomes, and guidelines from these two specific official sources:
@@ -120,6 +140,7 @@ CRITICAL MEDICAL & DESIGN CONSTRAINTS:
 2. UNKNOWN INFORMATION PROTOCOL: If the patient's question cannot be answered using the facts and instructions contained in the provided texts, or if the provided texts do not mention the topic of the query, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}" or the Cochrane Review. To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
 3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
 4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.`;
+    }
 
     const prompt = `Patient's question: "${question}"
 
