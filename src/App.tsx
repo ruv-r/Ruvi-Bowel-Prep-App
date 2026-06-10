@@ -803,7 +803,7 @@ export default function App() {
                       </header>
 
                       {prepType === 'Other' && (
-                        <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)] animate-pulse">
+                        <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)]">
                           <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                           <div className="text-xs">
                             <span className="font-extrabold uppercase tracking-wider block mb-1">GENERALIZED PROTOCOL NOTICE</span>
