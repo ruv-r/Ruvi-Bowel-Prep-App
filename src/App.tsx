@@ -469,6 +469,7 @@ export default function App() {
   // Let's compute progress percentage for circular indicator (Inspired by circular stat gauge in image)
   // Day 7 -> 12.5%, Day 6 -> 25%, Day 1 -> 87.5%, Day 0 -> 100%
   const getProgressPercentage = () => {
+    if (diffDays < 0) return 100;
     if (!activeDay) return 0;
     const daysFromStart = 7 - activeDay.daysOut;
     return Math.min(100, Math.max(0, Math.round((daysFromStart / 7) * 100)));
@@ -586,33 +587,52 @@ export default function App() {
 
             {/* Timeline navigation - Fully redesigned as active capsules linking steps beautifully */}
             <div className="bg-white border-b border-teal-500/10 flex items-center justify-between px-8 py-3.5 shrink-0 overflow-x-auto no-scrollbar gap-2 shadow-[0_2px_15px_rgba(0,0,0,0.01)]">
-              {daysArray.length > 0 ? daysArray.map((day, idx) => {
-                const isSelected = activeDay && day.daysOut === activeDay.daysOut;
-                const isRealToday = currentDayIndex === idx;
-                
-                return (
-                  <button 
-                    key={idx} 
-                    onClick={() => setSelectedDayOverride(day.daysOut)}
-                    className={`flex items-center gap-2 group px-4 py-2 rounded-full cursor-pointer transition-all shrink-0 ${
-                      isSelected 
+              {daysArray.length > 0 ? (
+                <>
+                  {daysArray.map((day, idx) => {
+                    const isSelected = diffDays === day.daysOut;
+                    
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 ${
+                          isSelected 
+                            ? 'bg-[#00a28a]/10 border border-[#00a28a]/40 text-[#00a28a] font-bold shadow-sm' 
+                            : 'border border-transparent text-slate-500'
+                        }`}
+                      >
+                        <div className={`w-2.5 h-2.5 rounded-full ${
+                          day.daysOut === 0 
+                            ? 'bg-[#ef4444]' 
+                            : isSelected 
+                              ? 'bg-[#00bfa5]' 
+                              : 'bg-slate-300'
+                        }`} />
+                        <div className="text-[10px] tracking-wider uppercase font-semibold">
+                          {day.daysOut === 0 ? 'Procedure' : `Day -${day.daysOut}`}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {/* Procedure complete tab */}
+                  <div 
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 ${
+                      diffDays < 0 
                         ? 'bg-[#00a28a]/10 border border-[#00a28a]/40 text-[#00a28a] font-bold shadow-sm' 
-                        : 'border border-transparent hover:bg-slate-100 text-slate-500'
+                        : 'border border-transparent text-slate-500'
                     }`}
                   >
-                    <div className={`w-2.5 h-2.5 rounded-full transition-transform group-hover:scale-110 ${
-                      day.daysOut === 0 
-                        ? 'bg-[#ef4444]' 
-                        : isSelected 
-                          ? 'bg-[#00bfa5]' 
-                          : 'bg-slate-300 group-hover:bg-slate-400'
+                    <div className={`w-2.5 h-2.5 rounded-full ${
+                      diffDays < 0 
+                        ? 'bg-[#00bfa5]' 
+                        : 'bg-slate-300'
                     }`} />
                     <div className="text-[10px] tracking-wider uppercase font-semibold">
-                      {day.daysOut === 0 ? 'Procedure' : `Day -${day.daysOut}`}
+                      Procedure complete
                     </div>
-                  </button>
-                );
-              }) : (
+                  </div>
+                </>
+              ) : (
                 <div className="text-[10px] uppercase font-bold text-slate-400 w-full text-center py-1">Initializing Dynamic Schedule...</div>
               )}
             </div>
