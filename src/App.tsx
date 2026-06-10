@@ -791,7 +791,7 @@ export default function App() {
                       <span className="text-[11px] text-slate-500 italic mt-2 block font-medium">
                         {diffDays > 7 && 'Awaiting the 7-day preparation horizon.'}
                         {diffDays < 0 && 'Post-clinical protocol achieved successfully.'}
-                        {diffDays >= 0 && diffDays <= 7 && 'Follow protocol with strict physical compliance.'}
+                        {diffDays >= 0 && diffDays <= 7 && 'Follow preparation steps closely.'}
                       </span>
                     </div>
                   </div>
@@ -805,7 +805,7 @@ export default function App() {
                       <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                       <div className="text-xs">
                         <span className="font-extrabold uppercase tracking-wider block mb-1">GENERALIZED PROTOCOL NOTICE</span>
-                        The timelines and instructions shown under "Other" are generalized dietary recommendations and are not specific to any particular bowel preparation kit. <strong>Please take this information with a grain of salt</strong> and strictly confirm your dosing timeline and clear fluid constraints with your clinical provider or doctor.
+                        The timelines and instructions shown under "Other" are generalized dietary recommendations and are not specific to any particular bowel preparation kit. Because there is no information kit to draw from, BowelPreppr will be less useful and functional. <strong>Please take this information with a grain of salt</strong> and strictly confirm your dosing timeline and clear fluid constraints with your clinical provider or doctor.
                       </div>
                     </div>
                   )}
@@ -841,7 +841,7 @@ export default function App() {
                           <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">
                             {activeDay.daysOut === 0 ? 'Day of Procedure' : `Clinical Day -${activeDay.daysOut}`}
                           </h2>
-                          <p className="text-xs text-slate-500 mt-1">Please adhere with 100% compliance to avoid repeating.</p>
+                          <p className="text-xs text-slate-500 mt-1">Please follow instructions carefully to avoid having to repeat the procedure.</p>
                         </div>
                         {activeDay.daysOut === 0 && (
                           <span className="bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">
@@ -992,7 +992,7 @@ export default function App() {
                           askAI(e);
                         }
                       }}
-                      placeholder="Ask a question (Enter to send, Shift+Enter for new line)"
+                      placeholder="Ask me a question"
                       className="w-full border border-slate-200 focus:border-[#00bfa5] rounded-xl p-3 text-xs outline-none bg-white font-medium transition-all resize-none custom-scrollbar min-h-[42px] max-h-[180px] overflow-y-auto leading-relaxed"
                     />
                     <button 
@@ -1005,7 +1005,7 @@ export default function App() {
                   </form>
                   <div className="flex items-center justify-center gap-1.5 mt-3 text-[9px] uppercase tracking-wider font-extrabold text-[#00a28a] opacity-65">
                     <CheckCircle2 className="w-3 h-3 text-[#00bfa5]" />
-                    Verified RAG Protocol
+                    Prep Bud only provides verified information.
                   </div>
                 </div>
               </aside>
