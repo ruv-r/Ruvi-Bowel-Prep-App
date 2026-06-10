@@ -718,12 +718,12 @@ export default function App() {
                     </div>
                     <div className="text-[11px] uppercase tracking-wider font-extrabold text-[#00a28a]">The Strategy</div>
                   </div>
-                  <h3 className="font-bold text-md text-slate-800 tracking-tight">The goal of Bowel Prep</h3>
+                  <h3 className="font-bold text-md text-slate-800 tracking-tight">The goal of bowel preparation</h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     A successful colonoscopy requires your intestines to be completely clear so that the camera can see all of the bowel walls clearly — bowel prep ensures this.
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed bg-[#f4f8f6] p-2.5 rounded-xl border border-teal-500/10 italic">
-                    If there is any residual faeces, the camera could obscure any abnormalities and lead to potentially missing big, important problems.
+                    If there is any residual faeces, this could hide any abnormalities and lead to potentially missing big, important problems.
                   </p>
                 </div>
 
@@ -944,8 +944,11 @@ export default function App() {
                         </div>
                       ))
                     ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-slate-400 text-[10px] uppercase tracking-widest font-bold opacity-40 italic">
-                        Empty Log
+                      <div className="h-full flex flex-col items-center justify-center text-center p-4 text-slate-600 text-[11px] leading-relaxed">
+                        <p className="font-bold text-slate-700 mb-1">No symptoms logged yet</p>
+                        <p className="text-[10px] text-slate-500 font-medium">
+                          Use this log to track any abnormal symptoms during your preparation and download the report to share with your doctor.
+                        </p>
                       </div>
                     )}
                   </div>
