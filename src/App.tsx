@@ -762,6 +762,16 @@ export default function App() {
                 {/* Primary Instructions Console */}
                 <div className="health-card p-8 flex flex-col min-h-0 bg-white">
                   
+                  {prepType === 'Other' && (
+                    <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)]">
+                      <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="text-xs">
+                        <span className="font-extrabold uppercase tracking-wider block mb-1">GENERALIZED PROTOCOL NOTICE</span>
+                        The timelines and instructions shown under "Other" are generalized dietary recommendations and are not specific to any particular bowel preparation kit. <strong>Please take this information with a grain of salt</strong> and strictly confirm your dosing timeline and clear fluid constraints with your clinical provider or doctor.
+                      </div>
+                    </div>
+                  )}
+                  
                   {diffDays > 7 ? (
                     /* More than 7 days ahead view */
                     <div className="py-12 text-center flex flex-col items-center gap-4 max-w-md mx-auto">
@@ -801,16 +811,6 @@ export default function App() {
                           </span>
                         )}
                       </header>
-
-                      {prepType === 'Other' && (
-                        <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)]">
-                          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                          <div className="text-xs">
-                            <span className="font-extrabold uppercase tracking-wider block mb-1">GENERALIZED PROTOCOL NOTICE</span>
-                            The timelines and instructions shown under "Other" are generalized dietary recommendations and are not specific to any particular bowel preparation kit. <strong>Please take this information with a grain of salt</strong> and strictly confirm your dosing timeline and clear fluid constraints with your clinical provider or doctor.
-                          </div>
-                        </div>
-                      )}
 
                       <div className="space-y-5">
                         {activeDay.instructions.length > 0 ? (
