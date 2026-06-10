@@ -25,6 +25,17 @@ function shouldTriggerKillSwitch(question: string): boolean {
     return true;
   }
 
+  // Helper check for specific out-of-scope hazards/substances to block out-of-context requests
+  const hazardKeywords = [
+    "engine oil", "motor oil", "brake fluid", "transmission fluid", "coolant", "antifreeze", 
+    "wd-40", "wd40", "gasoline", "petrol", "diesel", "kerosene", "battery acid", 
+    "bleach", "windex", "detergent", "paint thinner", "acetone", "household cleaner"
+  ];
+
+  if (hazardKeywords.some(keyword => normalized.includes(keyword))) {
+    return true;
+  }
+
   // 2. Unrelated Topics (Coding, Games, Sports, Finance, Politics, general AI prompts etc.)
   const unrelatedKeywords = [
     "write a script", "coding", "javascript", "typescript", "python", "programming", "software", "algorithm", "html", "css",
@@ -108,10 +119,11 @@ To ensure absolute safety, scientific rigor, and clinical accuracy, you MUST ONL
 1. Cochrane Systematic Review (CD006330) regarding Bowel Preparation for Colonoscopy (applicable as general medical consensus across all preparations)
 
 CRITICAL MEDICAL & DESIGN CONSTRAINTS:
-1. STRICT TRUTH & COCHRANE SCOPE: Your knowledge is strictly constrained to the text in the Cochrane Systematic Review context provided below. Because the patient is using "Other" (or a non-standard custom kit), you DO NOT have a specific Consumer Medicine Information (CMI) document. You are FORBIDDEN from assuming dosing intervals or bringing in external clinical guidance, brand-specific timelines, or medical knowledge not present in the Cochrane review.
+1. STRICT TRUTH & COCHRANE SCOPE: Your knowledge is strictly constrained to the text in the Cochrane Systematic Review context provided below. Because the patient is using "Other" (or a non-standard custom kit), you DO NOT have a specific Consumer Medicine Information (CMI) document. You are FORBIDDEN from using any external clinical guidance, brand-specific timelines, or general medical/world knowledge. If something is not in the Cochrane review, do not answer it or give advice.
 2. UNKNOWN INFORMATION PROTOCOL: If the patient asks about specific brand dosing times, sachet ingredients, mixing procedures, or if the question cannot be answered using the facts and instructions contained in the provided Cochrane text, you must politely respond: "I cannot find specific details regarding that in the universal Cochrane Review. Since you are not using a standard predefined prep kit, I do not have a specific manufacturer leaflet to draw from. To ensure your prep is safe and successful, please check your specific kit's box or contact your doctor's office directly."
-3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
-4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.
+3. UNRELATED TOPICS AND HARMFUL SUBSTANCES: If asked about drinking or consuming non-medical liquids, household chemicals, industrial fluids, or auto chemicals (including but not limited to engine oil, motor oil, gasoline, diesel, coolant, bleach, detergents), or any topic completely unrelated to a medical colonoscopy preparation, you are FORBIDDEN from providing advice, general knowledge warnings, or recommendations. You MUST trigger the UNKNOWN INFORMATION PROTOCOL and politely refuse to answer.
+4. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
+5. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.
 
 ---------------------------------
 UNIVERSAL COCHRANE SYSTEMATIC REVIEW (CD006330) CONTEXT:
@@ -138,8 +150,9 @@ ${cochraneDocument}
 CRITICAL MEDICAL & DESIGN CONSTRAINTS:
 1. STRICT TRUTH & RAG SCOPE: Your knowledge is strictly constrained to the text in the CMI document context and Cochrane Systematic Review context provided above. You are FORBIDDEN from bringing in external clinical guidance, alternative timelines, or medical knowledge not present in these documents. If information is present in both, prioritize the specific details from the kit's CMI document, while supplementing with relevant general facts or comparative insights from the Cochrane review.
 2. UNKNOWN INFORMATION PROTOCOL: If the patient's question cannot be answered using the facts and instructions contained in the provided texts, or if the provided texts do not mention the topic of the query, you must politely respond: "I cannot find specific details regarding that in the official clinical document for "${prepType}" or the Cochrane Review. To ensure your collection is safe and successful, please contact your clinician's office directly for advice."
-3. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
-4. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.`;
+3. UNRELATED TOPICS AND HARMFUL SUBSTANCES: If asked about drinking or consuming non-medical liquids, household chemicals, industrial fluids, or auto chemicals (including but not limited to engine oil, motor oil, gasoline, diesel, coolant, bleach, detergents), or any topic completely unrelated to a medical colonoscopy preparation, you are FORBIDDEN from providing advice, general knowledge warnings, or recommendations. You MUST trigger the UNKNOWN INFORMATION PROTOCOL and politely refuse to answer.
+4. METRIC UNIT ADHERENCE: You must ONLY use metric units (milliliters/ml, liters/L, grams/g) for liquid and solid measurements, exactly as specified in the source document.
+5. TONE: Be helpful, objective, professional, and reassuring. Keep the answer highly focused and easy to digest for a patient undergoing bowel cleansing.`;
     }
 
     const prompt = `Patient's question: "${question}"
