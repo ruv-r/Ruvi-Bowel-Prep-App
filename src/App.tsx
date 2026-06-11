@@ -620,7 +620,7 @@ export default function App() {
             key="dashboard"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col h-screen overflow-hidden bg-[#f4f8f6]"
+            className="flex flex-col md:h-screen md:overflow-hidden min-h-screen bg-[#f4f8f6]"
           >
             {/* Premium App Bar with signature Plus icon */}
             <header className="bg-white border-b border-teal-500/10 text-slate-900 flex justify-between items-center px-4 sm:px-8 py-3 h-16 shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.015)]">
@@ -656,11 +656,11 @@ export default function App() {
                 </div>
                 <button 
                   onClick={() => setShowResetConfirm(true)} 
-                  className="hidden xs:flex px-2 px-3 py-1.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/40 flex items-center gap-1.5 transition-all duration-200 cursor-pointer text-red-600 font-bold text-xs shadow-sm active:scale-95"
+                  className="flex px-2.5 py-1.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/40 flex items-center gap-1.5 transition-all duration-200 cursor-pointer text-red-600 font-bold text-xs shadow-sm active:scale-95"
                   title="Reset App Data"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                  <span className="hidden sm:inline">Reset App</span>
+                  <span className="hidden xs:inline">Reset App</span>
                 </button>
                 <button 
                   onClick={() => setIsSetup(false)} 
@@ -683,7 +683,7 @@ export default function App() {
             </header>
 
             {/* Timeline navigation - Fully redesigned as active capsules linking steps beautifully */}
-            <div className="bg-white border-b border-teal-500/10 flex items-center justify-between px-4 sm:px-8 py-3.5 shrink-0 overflow-x-auto no-scrollbar gap-2 shadow-[0_2px_15px_rgba(0,0,0,0.01)]">
+            <div className="hidden md:flex bg-white border-b border-teal-500/10 items-center justify-between px-4 sm:px-8 py-3.5 shrink-0 overflow-x-auto no-scrollbar gap-2 shadow-[0_2px_15px_rgba(0,0,0,0.01)]">
               {daysArray.length > 0 ? (
                 <>
                   {daysArray.map((day, idx) => {
@@ -736,10 +736,8 @@ export default function App() {
               ) : (
                 <div className="text-[10px] uppercase font-bold text-slate-400 w-full text-center py-1">Initializing Dynamic Schedule...</div>
               )}
-            </div>
-
-            {/* Dashboard Workspace */}
-            <main className="flex-grow grid grid-cols-1 md:grid-cols-[290px_1fr_340px] gap-0 min-h-0 bg-[#f4f8f6] relative">
+            </div>            {/* Dashboard Workspace */}
+            <main className="flex-grow grid grid-cols-1 md:grid-cols-[290px_1fr_340px] gap-0 md:min-h-0 bg-[#f4f8f6] relative">
               
               {/* Left Column Backdrop */}
               {isLeftOpenMobile && (
@@ -772,7 +770,7 @@ export default function App() {
                 {prepType !== 'Other' && (
                   <div className="health-card p-6 flex flex-col gap-3 bg-teal-50/50 border border-teal-200/45 rounded-2xl">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-teal-100/60 rounded-lg flex items-center justify-center text-[#00a28a] shrink-0">
+                       <div className="w-7 h-7 bg-teal-100/60 rounded-lg flex items-center justify-center text-[#00a28a] shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
                       <div className="text-[11px] uppercase tracking-wider font-extrabold text-[#00a28a]">Official Leaflet</div>
@@ -821,7 +819,7 @@ export default function App() {
               </aside>
 
               {/* Middle Column: Instructions, countdown circular tracker widget */}
-              <section className="flex flex-col p-4 sm:p-8 gap-4 sm:gap-6 overflow-y-auto custom-scrollbar min-h-0">
+              <section className="flex flex-col p-6 sm:p-8 gap-6 sm:gap-8 md:overflow-y-auto custom-scrollbar md:min-h-0">
                 
                 {/* Gauge Row Inspired by Circular Status Tracker from the Image */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 shrink-0 order-2 md:order-1">
@@ -987,13 +985,13 @@ export default function App() {
                 />
               )}
               
-              {/* Right Column: Symptoms Tracker & Protocol chatbot */}
+               {/* Right Column: Symptoms Tracker & Protocol chatbot */}
               <aside className={`
                 border-l border-teal-500/10 flex flex-col h-full bg-white
                 fixed inset-y-0 right-0 z-50 w-[340px] max-w-[90vw] shadow-2xl transition-transform duration-300 ease-in-out
                 ${isRightOpenMobile ? 'translate-x-0' : 'translate-x-full'}
                 md:translate-x-0 md:static md:w-auto md:shadow-none md:z-auto md:flex
-                overflow-y-auto custom-scrollbar
+                overflow-y-auto md:overflow-y-hidden custom-scrollbar
               `}>
                 
                 {/* Mobile Close Button */}
