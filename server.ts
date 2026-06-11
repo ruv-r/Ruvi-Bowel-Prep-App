@@ -193,6 +193,7 @@ async function startServer() {
     let question = "";
     let prepType = "";
     let cleanPrepType = "";
+    let daysRemaining = NaN;
     try {
       const body = req.body || {};
       question = body.question;
@@ -207,7 +208,7 @@ async function startServer() {
 
       const clientProcDate = body.procDate;
       const clientCurrentDate = body.currentDate || new Date().toISOString();
-      let daysRemaining = body.daysRemaining !== undefined && body.daysRemaining !== null ? Number(body.daysRemaining) : NaN;
+      daysRemaining = body.daysRemaining !== undefined && body.daysRemaining !== null ? Number(body.daysRemaining) : NaN;
       if (isNaN(daysRemaining) && clientProcDate) {
         const target = new Date(clientProcDate);
         const today = new Date(clientCurrentDate);
@@ -431,7 +432,7 @@ Provide your response:`;
       res.json({ text: responseText });
     } catch (error: any) {
       console.error("Server Gemini API Error (Using Offline Fallback):", error);
-      const fallbackText = generateFallbackResponse(question, cleanPrepType);
+      const fallbackText = generateFallbackResponse(question, cleanPrepType, daysRemaining);
       res.json({ text: fallbackText });
     }
   });

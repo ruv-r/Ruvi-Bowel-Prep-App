@@ -914,9 +914,9 @@ export default function App() {
                 </div>
 
                 {/* Medical Disclaimer (amber-styled) */}
-                <div className="p-5 bg-amber-50/80 border border-amber-200/80 text-amber-800 rounded-2xl flex flex-col gap-1 shadow-[0_2px_10px_rgba(245,158,11,0.03)] animate-fade-in shrink-0">
-                  <span className="text-[10px] font-extrabold uppercase text-amber-600 tracking-wider">Medical Disclaimer</span>
-                  <span className="text-xs font-semibold leading-relaxed">If you experience severe pain, bleeding, or extreme dehydration, call your physician's hotline immediately.</span>
+                <div className="p-5 bg-amber-50/80 border border-amber-200/80 text-amber-800 rounded-2xl flex flex-col gap-1.5 shadow-[0_2px_10px_rgba(245,158,11,0.03)] animate-fade-in shrink-0">
+                  <span className="text-[10px] font-extrabold uppercase text-amber-600 tracking-wider">Medical Disclaimer & AI Notice</span>
+                  <span className="text-xs font-semibold leading-relaxed">If you experience severe pain, bleeding, or extreme dehydration, call your physician's hotline immediately. All instructions and chat responses are AI generated—please confirm all timelines, dietary rules, and preparation steps with your clinical provider or doctor.</span>
                 </div>
               </section>
 
@@ -999,7 +999,7 @@ export default function App() {
                   </header>
                   
                   {/* Chat messages box with absolute fixed constraints and scroll limits */}
-                  <div className="flex-grow border border-slate-200/50 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white min-h-0 max-h-[300px]">
+                  <div className="flex-grow border border-slate-200/50 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white min-h-[400px] max-h-[550px]">
                     {chatHistory && Array.isArray(chatHistory) && chatHistory.filter(msg => msg && (msg.text || msg.role)).map((msg, i) => (
                       <div key={i} className={`conversation-bubble ${
                         msg.role === 'user' 
@@ -1040,9 +1040,14 @@ export default function App() {
                       <span>Send Message</span>
                     </button>
                   </form>
-                  <div className="flex items-center justify-center gap-1.5 mt-3 text-[9px] uppercase tracking-wider font-extrabold text-[#00a28a] opacity-65">
-                    <CheckCircle2 className="w-3 h-3 text-[#00bfa5]" />
-                    Prep Bud only provides verified information.
+                  <div className="flex flex-col items-center gap-1.5 mt-3 text-center">
+                    <div className="flex items-center justify-center gap-1.5 text-[9px] uppercase tracking-wider font-extrabold text-[#00a28a] opacity-65">
+                      <CheckCircle2 className="w-3 h-3 text-[#00bfa5]" />
+                      Prep Bud only provides verified information.
+                    </div>
+                    <p className="text-[9px] text-slate-400 font-medium leading-normal max-w-xs">
+                      All guidance from Prep Bud is AI generated. Always verify details and confirm your bowel preparation schedule with your healthcare clinician.
+                    </p>
                   </div>
                 </div>
               </aside>
