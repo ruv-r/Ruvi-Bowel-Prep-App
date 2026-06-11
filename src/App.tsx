@@ -275,6 +275,8 @@ const safeLocalStorage = {
 };
 
 export default function App() {
+  const [isLeftOpenMobile, setIsLeftOpenMobile] = useState(false);
+  const [isRightOpenMobile, setIsRightOpenMobile] = useState(false);
   const [procDate, setProcDate] = useState(() => {
     const val = safeLocalStorage.getItem('procDate');
     return (val && val !== 'null' && val !== 'undefined') ? val : '';
@@ -561,16 +563,20 @@ export default function App() {
                   <label className="block text-[10px] uppercase tracking-widest font-extrabold text-[#00a28a] mb-1.5">Procedure Date</label>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-[#00a28a] shrink-0" />
-                    <input 
-                      type={procDate ? "date" : "text"} 
-                      required
-                      placeholder="DD/MM/YYYY"
-                      value={procDate}
-                      onFocus={(e) => { e.currentTarget.type = "date"; }}
-                      onBlur={(e) => { if (!e.currentTarget.value) e.currentTarget.type = "text"; }}
-                      className={`w-full text-sm font-semibold bg-transparent outline-none date-input-field cursor-pointer ${procDate ? 'text-slate-800' : 'text-slate-400'}`}
-                      onChange={(e) => setProcDate(e.target.value)}
-                    />
+                    <div className="relative flex-grow w-full flex items-center">
+                      {!procDate && (
+                        <span className="absolute left-0 text-slate-400 text-sm font-semibold pointer-events-none select-none">
+                          Select procedure date
+                        </span>
+                      )}
+                      <input 
+                        type="date" 
+                        required
+                        value={procDate}
+                        className={`w-full text-sm font-extrabold bg-transparent outline-none date-input-field cursor-pointer ${procDate ? 'text-slate-800' : 'text-transparent'}`}
+                        onChange={(e) => setProcDate(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -616,18 +622,27 @@ export default function App() {
             className="flex flex-col h-screen overflow-hidden bg-[#f4f8f6]"
           >
             {/* Premium App Bar with signature Plus icon */}
-            <header className="bg-white border-b border-teal-500/10 text-slate-900 flex justify-between items-center px-8 py-3 h-16 shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.015)]">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gradient-to-tr from-[#00bfa5] to-[#00a28a] rounded-xl flex items-center justify-center text-white shadow-[0_4px_10px_rgba(0,162,138,0.2)]">
-                  <Activity className="w-5 h-5 text-white" />
+            <header className="bg-white border-b border-teal-500/10 text-slate-900 flex justify-between items-center px-4 sm:px-8 py-3 h-16 shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.015)]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Mobile Left Sidebar Toggle - Hamburger icon */}
+                <button
+                  type="button"
+                  onClick={() => setIsLeftOpenMobile(true)}
+                  className="md:hidden p-1.5 sm:p-2 hover:bg-slate-50 border border-slate-200/40 rounded-xl text-[#00a28a] transition-all cursor-pointer mr-0.5"
+                  title="Education Resources"
+                >
+                  <Compass className="w-5 h-5" />
+                </button>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-[#00bfa5] to-[#00a28a] rounded-xl flex items-center justify-center text-white shadow-[0_4px_10px_rgba(0,162,138,0.2)] shrink-0">
+                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div className="flex flex-col">
-                  <div className="font-extrabold text-lg text-slate-900 tracking-tight leading-none">BowelPreppr</div>
-                  <div className="text-[10px] font-semibold text-[#00a28a] tracking-wider uppercase mt-0.5">Clinical Protocol Suite</div>
+                  <div className="font-extrabold text-sm sm:text-lg text-slate-900 tracking-tight leading-none">BowelPreppr</div>
+                  <div className="text-[9px] sm:text-[10px] font-semibold text-[#00a28a] tracking-wider uppercase mt-0.5">Clinical Suite</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-6 text-[12px] font-semibold text-slate-600">
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6 text-[12px] font-semibold text-slate-600">
                 <div className="hidden sm:flex gap-1.5 px-3 py-1.5 bg-[#f4f8f6] rounded-full border border-slate-200/30 items-center">
                   <span className="opacity-60 text-[10px]">Medication:</span>
                   <span className="text-[#00a28a] font-bold">{prepType}</span>
@@ -640,11 +655,11 @@ export default function App() {
                 </div>
                 <button 
                   onClick={() => setShowResetConfirm(true)} 
-                  className="px-3.5 py-1.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/40 flex items-center gap-1.5 transition-all duration-200 cursor-pointer text-red-600 font-bold text-xs shadow-sm active:scale-95"
+                  className="hidden xs:flex px-2 px-3 py-1.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/40 flex items-center gap-1.5 transition-all duration-200 cursor-pointer text-red-600 font-bold text-xs shadow-sm active:scale-95"
                   title="Reset App Data"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                  <span>Reset App</span>
+                  <span className="hidden sm:inline">Reset App</span>
                 </button>
                 <button 
                   onClick={() => setIsSetup(false)} 
@@ -652,6 +667,16 @@ export default function App() {
                   title="Configure Schedule Settings"
                 >
                   <Settings className="w-4 h-4" />
+                </button>
+                {/* Mobile Right Sidebar Toggle - Messenger icon */}
+                <button
+                  type="button"
+                  onClick={() => setIsRightOpenMobile(true)}
+                  className="md:hidden w-8 h-8 rounded-full bg-teal-50 hover:bg-teal-100 border border-teal-200/40 flex items-center justify-center transition-all cursor-pointer text-[#00a28a] relative shadow-sm"
+                  title="Symptoms & Chatbot"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
                 </button>
               </div>
             </header>
@@ -713,10 +738,36 @@ export default function App() {
             </div>
 
             {/* Dashboard Workspace */}
-            <main className="flex-grow grid grid-cols-1 md:grid-cols-[290px_1fr_340px] gap-0 min-h-0 bg-[#f4f8f6]">
+            <main className="flex-grow grid grid-cols-1 md:grid-cols-[290px_1fr_340px] gap-0 min-h-0 bg-[#f4f8f6] relative">
+              
+              {/* Left Column Backdrop */}
+              {isLeftOpenMobile && (
+                <div 
+                  className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm md:hidden animate-fade-in"
+                  onClick={() => setIsLeftOpenMobile(false)}
+                />
+              )}
               
               {/* Left Column: Layman-friendly educational panel */}
-              <aside className="border-r border-teal-500/10 flex flex-col gap-5 p-6 overflow-y-auto custom-scrollbar bg-white/70 backdrop-blur-md">
+              <aside className={`
+                border-r border-teal-500/10 flex flex-col gap-5 p-6 overflow-y-auto custom-scrollbar bg-white/70 backdrop-blur-md
+                fixed inset-y-0 left-0 z-50 w-[290px] shadow-2xl transition-transform duration-300 ease-in-out
+                ${isLeftOpenMobile ? 'translate-x-0' : '-translate-x-full'}
+                md:translate-x-0 md:static md:w-auto md:shadow-none md:z-auto md:flex
+              `}>
+                
+                {/* Mobile Close Button */}
+                <div className="flex md:hidden items-center justify-between border-b border-teal-500/10 pb-4 shrink-0">
+                  <span className="font-extrabold text-[#00a28a] text-xs uppercase tracking-wider">Education Panel</span>
+                  <button 
+                    onClick={() => setIsLeftOpenMobile(false)}
+                    className="p-1 px-2.5 py-1 text-xs font-bold text-slate-500 hover:text-slate-800 border border-slate-200 rounded-full hover:bg-slate-50 cursor-pointer flex items-center gap-1 transition-all"
+                  >
+                    <span>Close</span>
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
                 {prepType !== 'Other' && (
                   <div className="health-card p-6 flex flex-col gap-3 bg-teal-50/50 border border-teal-200/45 rounded-2xl">
                     <div className="flex items-center gap-2">
@@ -927,8 +978,33 @@ export default function App() {
                 </div>
               </section>
 
+              {/* Right Column Backdrop */}
+              {isRightOpenMobile && (
+                <div 
+                  className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm md:hidden animate-fade-in"
+                  onClick={() => setIsRightOpenMobile(false)}
+                />
+              )}
+              
               {/* Right Column: Symptoms Tracker & Protocol chatbot */}
-              <aside className="border-l border-teal-500/10 flex flex-col h-full overflow-y-auto custom-scrollbar bg-white">
+              <aside className={`
+                border-l border-teal-500/10 flex flex-col h-full bg-white
+                fixed inset-y-0 right-0 z-50 w-[340px] max-w-[90vw] shadow-2xl transition-transform duration-300 ease-in-out
+                ${isRightOpenMobile ? 'translate-x-0' : 'translate-x-full'}
+                md:translate-x-0 md:static md:w-auto md:shadow-none md:z-auto md:flex
+              `}>
+                
+                {/* Mobile Close Button */}
+                <div className="flex md:hidden items-center justify-between p-4 border-b border-teal-500/10 shrink-0 bg-slate-50">
+                  <span className="font-extrabold text-[#00a28a] text-xs uppercase tracking-wider">Symptoms & Support</span>
+                  <button 
+                    onClick={() => setIsRightOpenMobile(false)}
+                    className="p-1 px-2.5 py-1 text-xs font-bold text-slate-500 hover:text-slate-800 border border-slate-200 rounded-full hover:bg-slate-50 cursor-pointer flex items-center gap-1 transition-all"
+                  >
+                    <span>Close</span>
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 
                 {/* Symptom Tracker Panel */}
                 <div className="p-6 border-b border-teal-500/10 flex flex-col h-[280px]">
