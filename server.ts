@@ -4,6 +4,18 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import { RAG_SOURCES, COCHRANE_REVIEW_SOURCE } from "./src/lib/rag_sources";
 
+// Helper to format date nicely
+function formatDateFriendly(dateStr: string): string {
+  if (!dateStr) return "unknown date";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  } catch (e) {
+    return dateStr;
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -67,7 +79,7 @@ async function startServer() {
   }
 
   // Fallback response generator in case of API quota limit issues or empty API keys
-  function generateFallbackResponse(question: string, prepType: string): string {
+  function generateFallbackResponse(question: string, prepType: string, daysRemaining?: number): string {
     const qStr = question.toLowerCase().trim();
     const prepName = prepType || 'your bowel preparation';
     
@@ -76,6 +88,42 @@ async function startServer() {
     // 1. Extreme topics or general unrelated check
     if (qStr.includes("suicide") || qStr.includes("harm") || qStr.includes("kill myself")) {
       return `If you are experiencing a mental health emergency, self-harm thoughts, or severe distress, please contact emergency services (like 000 in Australia or 911/988) immediately. I care about your safety first.`;
+    }
+
+    const hasTimeline = daysRemaining !== undefined && !isNaN(daysRemaining);
+
+    if (hasTimeline) {
+      if (daysRemaining > 7) {
+        if (qStr.includes("eat") || qStr.includes("food") || qStr.includes("diet") || qStr.includes("solid") || qStr.includes("fiber") || qStr.includes("meal") || qStr.includes("banana") || qStr.includes("bread") || qStr.includes("rice") || qStr.includes("kiwi") || qStr.includes("tomato") || qStr.includes("seed") || qStr.includes("nut")) {
+          return intro + `Since your procedure is still **${daysRemaining} days away**, you are currently in the **Pre-preparation phase**.\n\n` +
+            `* **Diet Rules:** You do **not** need to restrict your diet yet! You can eat custom or normal foods, muesli, seeds, fruits, vegetables, etc., exactly as you normally would.\n` +
+            `* **Timeline Warning:** Your active low-residue physical diet restrictions and prep steps should start exactly **7 days prior** to your scheduled procedure. You can return to this app then to initiate your customized daily guidance easily!`;
+        }
+      } else if (daysRemaining === 0) {
+        if (qStr.includes("eat") || qStr.includes("food") || qStr.includes("diet") || qStr.includes("solid") || qStr.includes("fiber") || qStr.includes("meal") || qStr.includes("banana") || qStr.includes("bread") || qStr.includes("rice") || qStr.includes("kiwi") || qStr.includes("tomato") || qStr.includes("seed") || qStr.includes("nut")) {
+          return intro + `Today is the **Day of your Procedure (Day 0)**! You must follow these absolute guidelines:\n\n` +
+            `* **Fast Completely:** Strictly **no food, drink, or water** starting 2 hours prior to your scheduled examination (or 6 hours if using Picolax). Absolutely no solid foods under any circumstances.\n` +
+            `* **Compliance:** Proper fasting is a critical medical safety rule to prevent any aspiration/vomiting risks during clinical sedation. Please proceed directly to your hospital/clinic as planned.`;
+        }
+      } else if (daysRemaining === 1) {
+        if (qStr.includes("eat") || qStr.includes("food") || qStr.includes("diet") || qStr.includes("solid") || qStr.includes("fiber") || qStr.includes("meal") || qStr.includes("banana") || qStr.includes("bread") || qStr.includes("rice") || qStr.includes("kiwi") || qStr.includes("tomato") || qStr.includes("seed") || qStr.includes("nut")) {
+          return intro + `Today is **Day -1 (the day before your procedure)**. You have entered the absolute clean-out phase:\n\n` +
+            `* **Strict Clear Liquids Only:** You must stop **all** solid food, meats, dairy, milk, and fruit pulps immediately. Only consume approved clear liquids (clear water, clear bio-strained broth, black coffee/tea without milk, plain pale gelatin/sports drinks). Avoid red or purple colorings!\n` +
+            `* **Doses:** Make sure to follow and consume your active bowel kit sachets precisely at the prescribed timeline hours of Day -1.`;
+        }
+      } else if (daysRemaining > 1 && daysRemaining <= 7) {
+        if (qStr.includes("eat") || qStr.includes("food") || qStr.includes("diet") || qStr.includes("solid") || qStr.includes("fiber") || qStr.includes("meal") || qStr.includes("banana") || qStr.includes("bread") || qStr.includes("rice") || qStr.includes("kiwi") || qStr.includes("tomato") || qStr.includes("seed") || qStr.includes("nut")) {
+          return intro + `Today is **Day -${daysRemaining} (${daysRemaining} days remaining)**. You are in the **Low-Residue Transition Phase**:\n\n` +
+            `* **Low-Residue diet active:** Transition to eating low-residue foods like eggs, white bread, plain white rice, boiled chicken, skinless steamed white fish, or plain pasta.\n` +
+            `* **Strict Restraints:** Avoid eating seeds, grains, muesli, raw fruit/vegetable skin (like kiwi, tomatoes), and high-fiber/fibrous foods.\n` +
+            `* **Aesthetic Note:** **Do NOT** take your bowel preparation laxatives or clear-liquid fast today! Those only begin on Day -1. Today is purely a low-fiber diet shift to optimize your cleanse.`;
+        }
+        if (qStr.includes("take") || qStr.includes("dose") || qStr.includes("pill") || qStr.includes("medication") || qStr.includes("sachet") || qStr.includes("step") || qStr.includes("how to mix") || qStr.includes("mix")) {
+          return intro + `Today is **Day -${daysRemaining} (${daysRemaining} days remaining)**.\n\n` +
+            `* **Laxative / Sachet Doses:** You do **not** take any of your active bowel preparation sachet doses or laxative tablets today. Those only start on Day -1 (the day before your procedure).\n` +
+            `* **What to do:** Focus on following the **low-residue diet** instructions of your schedule today, avoid seeds/fibers, and keep drinking plenty of clear fluids/water to stay hydrated.`;
+        }
+      }
     }
 
     // 2. Clear liquid / drink questions
@@ -123,14 +171,22 @@ async function startServer() {
     }
 
     // 6. Generic or friendly welcome
-    return intro + `I am Prep Bud, your dedicated clinical prep assistant for **${prepName}**!\n\n` +
+    let currentDayStr = hasTimeline 
+      ? (daysRemaining > 7 
+          ? `(currently Pre-preparation Phase, ${daysRemaining} days remaining)` 
+          : daysRemaining === 0 
+            ? `(today is Day of Procedure)` 
+            : `(currently Day -${daysRemaining})`) 
+      : "";
+
+    return intro + `I am Prep Bud, your dedicated clinical prep assistant for **${prepName}** ${currentDayStr}!\n\n` +
       `I can help you navigate this cleanse completely offline. Ask me anything about:\n` +
       `* **Diet / Eating Rules:** (e.g., "What can I eat on Day 7?", "Can I eat solid food tomorrow?")\n` +
       `* **Approved Fluids:** (e.g., "Can I drink coffee?", "What juices are allowed?")\n` +
       `* **Medications & Contraceptives:** (e.g., "Will my birth control pill still work?", "How to mix my sachets?")\n` +
       `* **Handling Side-effects:** (e.g., "I feel nauseous, what should I do?")\n\n` +
       `What specific part of your bowel preparation schedule can I support you with today?`;
-    }
+  }
 
   // Secure API connection to Gemini AI agent
   app.post("/api/chat", async (req, res) => {
@@ -148,6 +204,18 @@ async function startServer() {
 
       cleanPrepType = String(prepType || '').trim();
       const isOther = cleanPrepType.toLowerCase() === 'other';
+
+      const clientProcDate = body.procDate;
+      const clientCurrentDate = body.currentDate || new Date().toISOString();
+      let daysRemaining = body.daysRemaining !== undefined && body.daysRemaining !== null ? Number(body.daysRemaining) : NaN;
+      if (isNaN(daysRemaining) && clientProcDate) {
+        const target = new Date(clientProcDate);
+        const today = new Date(clientCurrentDate);
+        target.setHours(0,0,0,0);
+        today.setHours(0,0,0,0);
+        const diff = target.getTime() - today.getTime();
+        daysRemaining = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      }
 
       // Exact UNKNOWN INFORMATION PROTOCOL message definitions
       const unknownOtherMsg = "I cannot find specific details regarding that in the universal Cochrane Review. Since you are not using a standard predefined prep kit, I do not have a specific manufacturer leaflet to draw from. To ensure your prep is safe and successful, please check your specific kit's box or contact your doctor's office directly.";
@@ -175,12 +243,12 @@ async function startServer() {
         });
       }
 
-      console.log(`[Chat Endpoint] Incoming request - prepType: "${cleanPrepType}", question: "${question}"`);
+      console.log(`[Chat Endpoint] Incoming request - prepType: "${cleanPrepType}", question: "${question}", Days Remaining: ${daysRemaining}`);
 
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         console.warn("[Chat Endpoint] GEMINI_API_KEY is undefined. Falling back to offline model assistant.");
-        const fallbackText = generateFallbackResponse(question, cleanPrepType);
+        const fallbackText = generateFallbackResponse(question, cleanPrepType, daysRemaining);
         return res.json({ text: fallbackText });
       }
 
@@ -199,16 +267,65 @@ async function startServer() {
 
       console.log(`[Chat Endpoint] Context Loaded: sourceDocument Length = ${sourceDocument.length} chars, cochraneDocument Length = ${cochraneDocument.length} chars`);
 
+      let timelineInstruction = "";
+      if (clientProcDate && !isNaN(daysRemaining)) {
+        if (daysRemaining > 7) {
+          timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Today's date relative to procedure: **${daysRemaining} days remaining** until the procedure scheduled for ${formatDateFriendly(clientProcDate)}.
+- Strict Phase: **Pre-preparation / Normal Diet**. The patient is currently outside of the 7-day bowel prep dietary restriction period.
+- YOUR CRITICAL DIRECTION: If the patient asks what they can/cannot eat or drink, or what rules they should follow right now, you MUST explicitly recognize that they are still ${daysRemaining} days out from their procedure date (${formatDateFriendly(clientProcDate)}), which is outside the active 7-day restriction period. Reassure them that they DO NOT need to restrict their diet yet and they can eat a normal diet today. Let them know they should return to this advisor exactly 7 days prior to their procedure. Do NOT trigger the UNKNOWN INFORMATION PROTOCOL fallback message for normal food/diet queries when they are more than 7 days out!
+`;
+        } else if (daysRemaining === 0) {
+          timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Today's date relative to procedure: **Today is the EXACT Day of the Procedure (Day 0)** (Procedure Date: ${formatDateFriendly(clientProcDate)}).
+- Strict Phase: **Absolute Fasting / Sedation Readiness**. Absolute zero solid foods are allowed, and all fluid/water intake must be completely stopped exactly 2 hours prior to the procedure.
+- YOUR CRITICAL DIRECTION: If they ask about eating or drinking, emphasize that they are now on their actual procedure day and must maintain complete fasting protocols. Do not give diet advice for any earlier days.
+`;
+        } else if (daysRemaining === 1) {
+          timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Today's date relative to procedure: **Day -1 (The day before the procedure)** (Procedure Date: ${formatDateFriendly(clientProcDate)}).
+- Strict Phase: **Clear Liquids Only & Bowel Cleansing Kit Start**. Strictly no solid food, dairy, or meats are allowed. Only approved clear liquids and prescribed bowel prep doses are to be taken.
+- YOUR CRITICAL DIRECTION: If they ask what they can eat or do, make sure they understand they are on Day -1 (the day before the procedure) and must strictly limit themselves to clear liquids only. They must not eat solid foods under any circumstances!
+`;
+        } else if (daysRemaining > 1 && daysRemaining <= 7) {
+          timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Today's date relative to procedure: **Day -${daysRemaining} (${daysRemaining} days remaining)** until the procedure scheduled for ${formatDateFriendly(clientProcDate)}.
+- Strict Phase: **Low-Residue Transition Phase**. The patient is in the low-fiber diet transition period. Normal fiber, seeds, nuts, whole grains, raw vegetables, and skin-on fruits must be completely avoided.
+- YOUR CRITICAL DIRECTION: Keep advice strictly appropriate for Day -${daysRemaining}. Remind them that they can eat low-residue foods like white rice, white bread, plain pasta, eggs, chicken, and skinless steam-boiled fish. Reassure them that they should **NOT** start clear liquid diets or take their bowel cleanser/laxative sachets today—those are strictly for the day before (Day -1).
+`;
+        } else if (daysRemaining < 0) {
+          timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Today's date relative to procedure: **The procedure has already occurred** (Date: ${formatDateFriendly(clientProcDate)}).
+- Strict Phase: **Post-procedure recovery**.
+- YOUR CRITICAL DIRECTION: Reassure them that the preparation is complete, and guide them to consult their recovery discharge paperwork or post-procedure clinic directions for dietary resumption.
+`;
+        }
+      } else if (clientProcDate) {
+        timelineInstruction = `
+=== CHRONOLOGICAL CONTEXT ===
+- Procedure is scheduled for ${formatDateFriendly(clientProcDate)}, but the current comparison date is undetermined.
+`;
+      }
+
       let systemInstruction = "";
       if (isOther) {
         systemInstruction = `You are "Prep Bud", a friendly, empathetic, and helpful clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
 The patient is using a customized or unspecified bowel prep kit (referred to as "Other").
+${timelineInstruction}
 
 === ABSOLUTE CONSTRAINT: STRICT DOCUMENT-ONLY GROUNDING ===
 Your knowledge is strictly and absolutely limited to the text in the UNIVERSAL COCHRANE SYSTEMATIC REVIEW provided below. You do not possess any general world knowledge, medical knowledge, common sense, or reasoning outside of the literal sentences in the provided text.
 - If the patient's question contains ANY terms, concepts, products, chemicals, substances, medications, or ideas that are not explicitly written in the provided text, you are FORBIDDEN from discussing, warning about, detailing, explaining, or acknowledging them.
 - If the patient asks about consuming or drinking non-medical liquids, household liquids, auto chemicals (like engine oil, motor oil, bleach, gasoline), or any other substance not explicitly discussed as an approved bowel preparation agent, you MUST NOT warn them or give safety advice using general knowledge. You MUST strictly treat it as completely unknown and output the exact UNKNOWN INFORMATION PROTOCOL response.
 - DO NOT use external clinical assumptions. If the patient asks "What happens if I drink motor oil?" or "Can I eat bananas?", since "motor oil" and "bananas" are NOT mentioned in the text below, you must NOT say they are bad or explain why. You MUST strictly output the EXACT text of the UNKNOWN INFORMATION PROTOCOL message.
+
+=== EXCEPTION TO GROUNDING CONSTRAINTS ===
+- TEMPORAL SCHEDULING EXCEPTION: Providing chronological context, confirming that there are ${daysRemaining} days remaining, or reassuring the user that they can eat normally when they are outside of the active 7-day bowel prep dietary restriction period is a critical, mandatory exception to the grounding constraints. Do NOT trigger the UNKNOWN INFORMATION PROTOCOL fallback message when reassuring a user that they can eat normally during their Pre-preparation / Normal Diet phase (>7 days remaining) or when confirming typical day-specific dietary instructions for the current day out.
 
 UNKNOWN INFORMATION PROTOCOL:
 If the patient's question refers to any topic, brand, time, ingredient, or item not explicitly covered by the Cochrane review text, respond with this EXACT text and nothing else:
@@ -225,12 +342,16 @@ ${cochraneDocument}
       } else {
         systemInstruction = `You are "Prep Bud", a friendly, empathetic, and helpful clinical protocol assistant helping a patient with their bowel preparation for a colonoscopy.
 The patient is using the preparation kit: "${prepType}".
+${timelineInstruction}
 
 === ABSOLUTE CONSTRAINT: STRICT DOCUMENT-ONLY GROUNDING ===
 Your knowledge is strictly and absolutely limited to the text in the OFFICIAL CMI DOCUMENT and UNIVERSAL COCHRANE SYSTEMATIC REVIEW provided below. You do not possess any general world knowledge, medical knowledge, common sense, or reasoning outside of the literal sentences in the provided texts.
 - If the patient's question contains ANY terms, concepts, products, chemicals, substances, medications, or ideas that are not explicitly written in the provided contexts, you are FORBIDDEN from discussing, warning about, detailing, explaining, or acknowledging them.
 - If the patient asks about consuming or drinking non-medical liquids, household liquids, auto chemicals (like engine oil, motor oil, bleach, gasoline), or any other substance not explicitly discussed as an approved bowel preparation agent, you MUST NOT warn them or give safety advice using general knowledge. You MUST strictly treat it as completely unknown and output the exact UNKNOWN INFORMATION PROTOCOL response.
 - DO NOT use external clinical assumptions. If the patient asks "What happens if I drink motor oil?" or "Can I eat bananas?", since they are not mentioned in the provided texts, you must NOT say they are bad or explain why. You MUST strictly output the EXACT text of the UNKNOWN INFORMATION PROTOCOL message.
+
+=== EXCEPTION TO GROUNDING CONSTRAINTS ===
+- TEMPORAL SCHEDULING EXCEPTION: Providing chronological context, confirming that there are ${daysRemaining} days remaining, or reassuring the user that they can eat normally when they are outside of the active 7-day bowel prep dietary restriction period is a critical, mandatory exception to the grounding constraints. Do NOT trigger the UNKNOWN INFORMATION PROTOCOL fallback message when reassuring a user that they can eat normally during their Pre-preparation / Normal Diet phase (>7 days remaining) or when confirming typical day-specific dietary instructions for the current day out.
 
 UNKNOWN INFORMATION PROTOCOL:
 If the patient's question refers to any topic, brand, time, ingredient, or item not explicitly covered by the provided texts, respond with this EXACT text and nothing else:

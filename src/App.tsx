@@ -398,7 +398,8 @@ export default function App() {
     setChatInput('');
     setLoading(true);
 
-    const aiResponse = await askPrepAI(userMsg, prepType);
+    const nowIso = new Date().toISOString();
+    const aiResponse = await askPrepAI(userMsg, prepType, procDate, nowIso, diffDays);
     
     setChatHistory(prev => [...prev, { 
       role: 'ai', 

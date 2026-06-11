@@ -1,11 +1,17 @@
-export async function askPrepAI(question: string, prepType: string): Promise<string> {
+export async function askPrepAI(
+  question: string, 
+  prepType: string, 
+  procDate?: string, 
+  currentDate?: string, 
+  daysRemaining?: number
+): Promise<string> {
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question, prepType }),
+      body: JSON.stringify({ question, prepType, procDate, currentDate, daysRemaining }),
     });
 
     if (!response.ok) {
