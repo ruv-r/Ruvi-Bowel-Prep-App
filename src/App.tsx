@@ -736,6 +736,9 @@ export default function App() {
                   <p className="text-xs text-slate-600 leading-relaxed">
                     A simple medical test where doctors send a thin, flexible camera into your intestines to inspect the walls and check for abnormalities that could develop into cancers.
                   </p>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Every year, 60,000 colonoscopies fail or are rescheduled due to inadequate bowel preparation.
+                  </p>
                 </div>
 
                 <div className="health-card p-6 flex flex-col gap-3">
