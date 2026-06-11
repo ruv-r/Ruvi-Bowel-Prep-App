@@ -22,7 +22,8 @@ import {
   Compass,
   FileCode,
   ShieldAlert,
-  Bot
+  Bot,
+  Menu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { askPrepAI } from './lib/gemini';
@@ -631,7 +632,7 @@ export default function App() {
                   className="md:hidden p-1.5 sm:p-2 hover:bg-slate-50 border border-slate-200/40 rounded-xl text-[#00a28a] transition-all cursor-pointer mr-0.5"
                   title="Education Resources"
                 >
-                  <Compass className="w-5 h-5" />
+                  <Menu className="w-5 h-5" />
                 </button>
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-[#00bfa5] to-[#00a28a] rounded-xl flex items-center justify-center text-white shadow-[0_4px_10px_rgba(0,162,138,0.2)] shrink-0">
                   <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -682,7 +683,7 @@ export default function App() {
             </header>
 
             {/* Timeline navigation - Fully redesigned as active capsules linking steps beautifully */}
-            <div className="bg-white border-b border-teal-500/10 flex items-center justify-between px-8 py-3.5 shrink-0 overflow-x-auto no-scrollbar gap-2 shadow-[0_2px_15px_rgba(0,0,0,0.01)]">
+            <div className="bg-white border-b border-teal-500/10 flex items-center justify-between px-4 sm:px-8 py-3.5 shrink-0 overflow-x-auto no-scrollbar gap-2 shadow-[0_2px_15px_rgba(0,0,0,0.01)]">
               {daysArray.length > 0 ? (
                 <>
                   {daysArray.map((day, idx) => {
@@ -820,16 +821,16 @@ export default function App() {
               </aside>
 
               {/* Middle Column: Instructions, countdown circular tracker widget */}
-              <section className="flex flex-col p-8 gap-6 overflow-y-auto custom-scrollbar min-h-0">
+              <section className="flex flex-col p-4 sm:p-8 gap-4 sm:gap-6 overflow-y-auto custom-scrollbar min-h-0">
                 
                 {/* Gauge Row Inspired by Circular Status Tracker from the Image */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 shrink-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 shrink-0 order-2 md:order-1">
                   
                   {/* Gauge Card */}
-                  <div className="health-card p-6 flex items-center gap-5 justify-between relative overflow-hidden bg-white">
-                    <div className="flex flex-col justify-center">
+                  <div className="health-card p-4 sm:p-6 flex flex-col xs:flex-row items-center gap-4 xs:gap-5 justify-between relative overflow-hidden bg-white text-center xs:text-left">
+                    <div className="flex flex-col justify-center items-center xs:items-start">
                       <div className="text-[10px] uppercase tracking-wider font-extrabold text-[#64748b] mb-1">Schedule Progress</div>
-                      <h4 className="text-2xl font-black text-slate-800 tracking-tight">Active Cleanse</h4>
+                      <h4 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Active Cleanse</h4>
                       <p className="text-xs text-slate-500 mt-1">Countdown: {timeRemaining || 'T-MIN'}</p>
                     </div>
 
@@ -866,10 +867,10 @@ export default function App() {
                   </div>
 
                   {/* Status Indicator Panel */}
-                  <div className="health-card p-6 flex flex-col justify-between bg-white">
+                  <div className="health-card p-4 sm:p-6 flex flex-col justify-between bg-white text-center xs:text-left">
                     <div>
                       <div className="text-[10px] uppercase tracking-wider font-extrabold text-[#64748b] mb-1">Status Phase</div>
-                      <div className="text-2xl font-black tracking-tight text-[#00a28a] uppercase">
+                      <div className="text-xl sm:text-2xl font-black tracking-tight text-[#00a28a] uppercase">
                         {currentActiveDaysOut > 7 && 'Pre-Preparation'}
                         {currentActiveDaysOut < 0 && 'Procedure Complete'}
                         {currentActiveDaysOut >= 0 && currentActiveDaysOut <= 7 && (activeDay?.daysOut === 0 ? 'Clinical Day' : 'Preparation Phase')}
@@ -886,7 +887,7 @@ export default function App() {
                 </div>
 
                 {/* Primary Instructions Console */}
-                <div className="health-card p-8 flex flex-col min-h-0 bg-white">
+                <div className="health-card p-4 sm:p-8 flex flex-col min-h-0 bg-white order-1 md:order-2 shadow-[0_4px_22px_rgba(0,162,138,0.015)]">
                   
                   {prepType === 'Other' && (
                     <div className="mb-6 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex gap-3 text-amber-800 shadow-[0_2px_10px_rgba(245,158,11,0.04)]">
@@ -924,15 +925,15 @@ export default function App() {
                     </div>
                   ) : activeDay ? (
                     <>
-                      <header className="flex justify-between items-start mb-8 border-b border-slate-100 pb-5">
+                      <header className="flex flex-col xs:flex-row xs:justify-between xs:items-start gap-4 mb-6 sm:mb-8 border-b border-slate-100 pb-5">
                         <div>
-                          <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">
+                          <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight uppercase">
                             {activeDay.daysOut === 0 ? 'Day of Procedure' : `Clinical Day -${activeDay.daysOut}`}
                           </h2>
                           <p className="text-xs text-slate-500 mt-1">Please follow instructions carefully to avoid having to repeat the procedure.</p>
                         </div>
                         {activeDay.daysOut === 0 && (
-                          <span className="bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                          <span className="bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full self-start xs:self-auto shrink-0 text-center">
                             Mandatory Fast
                           </span>
                         )}
@@ -972,7 +973,7 @@ export default function App() {
                 </div>
 
                 {/* Medical Disclaimer (amber-styled) */}
-                <div className="p-5 bg-amber-50/80 border border-amber-200/80 text-amber-800 rounded-2xl flex flex-col gap-1.5 shadow-[0_2px_10px_rgba(245,158,11,0.03)] animate-fade-in shrink-0">
+                <div className="p-4 sm:p-5 bg-amber-50/80 border border-amber-200/80 text-amber-800 rounded-2xl flex flex-col gap-1.5 shadow-[0_2px_10px_rgba(245,158,11,0.03)] animate-fade-in shrink-0 order-3 md:order-3">
                   <span className="text-[10px] font-extrabold uppercase text-amber-600 tracking-wider">Medical Disclaimer & AI Notice</span>
                   <span className="text-xs font-semibold leading-relaxed">If you experience severe pain, bleeding, or extreme dehydration, call your physician's hotline immediately. All instructions and chat responses are AI generated—please confirm all timelines, dietary rules, and preparation steps with your clinical provider or doctor.</span>
                 </div>
@@ -992,6 +993,7 @@ export default function App() {
                 fixed inset-y-0 right-0 z-50 w-[340px] max-w-[90vw] shadow-2xl transition-transform duration-300 ease-in-out
                 ${isRightOpenMobile ? 'translate-x-0' : 'translate-x-full'}
                 md:translate-x-0 md:static md:w-auto md:shadow-none md:z-auto md:flex
+                overflow-y-auto custom-scrollbar
               `}>
                 
                 {/* Mobile Close Button */}
@@ -1007,7 +1009,7 @@ export default function App() {
                 </div>
                 
                 {/* Symptom Tracker Panel */}
-                <div className="p-6 border-b border-teal-500/10 flex flex-col h-[280px]">
+                <div className="p-6 border-b border-teal-500/10 flex flex-col h-[280px] shrink-0">
                   <header className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 font-black uppercase text-[12px] text-slate-800">
                       <Activity className="w-4 h-4 text-[#00a28a]" />
@@ -1075,14 +1077,14 @@ export default function App() {
                 </div>
 
                 {/* AI Assistant Chat Panel */}
-                <div className="p-6 flex-grow flex flex-col min-h-0 bg-[#fbfdfc]">
+                <div className="p-6 flex-grow flex flex-col min-h-0 bg-[#fbfdfc] shrink-0 md:shrink">
                   <header className="flex items-center gap-2 font-black uppercase text-[12px] text-slate-800 mb-4">
                     <Bot className="w-4 h-4 text-[#00a28a]" />
                     Prep Bud
                   </header>
                   
                   {/* Chat messages box with absolute fixed constraints and scroll limits */}
-                  <div className="flex-grow border border-slate-200/50 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white min-h-[400px] max-h-[550px]">
+                  <div className="flex-grow border border-slate-200/50 rounded-2xl p-4 mb-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white min-h-[250px] sm:min-h-[350px] md:min-h-[400px] max-h-[450px] md:max-h-[550px]">
                     {chatHistory && Array.isArray(chatHistory) && chatHistory.filter(msg => msg && (msg.text || msg.role)).map((msg, i) => (
                       <div key={i} className={`conversation-bubble ${
                         msg.role === 'user' 
