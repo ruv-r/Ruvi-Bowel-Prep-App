@@ -123,8 +123,9 @@ function RenderChatMessage({ text, role }: { text: string; role: 'user' | 'ai' }
     const elements: React.ReactNode[] = [];
     let currentList: { type: 'ul' | 'ol'; items: React.ReactNode[] } | null = null;
 
-    const renderTextWithBold = (str: string, key: string) => {
-      const parts = str.split(/\*\*(.*?)\*\*/g);
+    const renderTextWithBold = (str: any, key: string) => {
+      const safeStr = typeof str === 'string' ? str : String(str || '');
+      const parts = safeStr.split(/\*\*(.*?)\*\*/g);
       return (
         <span key={key}>
           {parts.map((part, index) => {
@@ -525,10 +526,12 @@ export default function App() {
     ? (daysArray.find(d => d.daysOut === selectedDayOverride) || autoActiveDay) 
     : autoActiveDay;
 
+  const currentActiveDaysOut = selectedDayOverride !== null ? selectedDayOverride : diffDays;
+
   // Let's compute progress percentage for circular indicator (Inspired by circular stat gauge in image)
   // Day 7 -> 12.5%, Day 6 -> 25%, Day 1 -> 87.5%, Day 0 -> 100%
   const getProgressPercentage = () => {
-    if (diffDays < 0) return 100;
+    if (currentActiveDaysOut < 0) return 100;
     if (!activeDay) return 0;
     const daysFromStart = 7 - activeDay.daysOut;
     return Math.min(100, Math.max(0, Math.round((daysFromStart / 7) * 100)));
@@ -658,15 +661,18 @@ export default function App() {
               {daysArray.length > 0 ? (
                 <>
                   {daysArray.map((day, idx) => {
-                    const isSelected = diffDays === day.daysOut;
+                    const isSelected = selectedDayOverride !== null 
+                      ? selectedDayOverride === day.daysOut 
+                      : diffDays === day.daysOut;
                     
                     return (
-                      <div 
+                      <button 
                         key={idx} 
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 ${
+                        onClick={() => setSelectedDayOverride(day.daysOut)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 cursor-pointer ${
                           isSelected 
                             ? 'bg-[#00a28a]/10 border border-[#00a28a]/40 text-[#00a28a] font-bold shadow-sm' 
-                            : 'border border-transparent text-slate-500'
+                            : 'border border-slate-200/40 hover:bg-slate-50 text-slate-500'
                         }`}
                       >
                         <div className={`w-2.5 h-2.5 rounded-full ${
@@ -679,26 +685,27 @@ export default function App() {
                         <div className="text-[10px] tracking-wider uppercase font-semibold">
                           {day.daysOut === 0 ? 'Procedure' : `Day -${day.daysOut}`}
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                   {/* Procedure complete tab */}
-                  <div 
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 ${
-                      diffDays < 0 
+                  <button 
+                    onClick={() => setSelectedDayOverride(-1)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all shrink-0 cursor-pointer ${
+                      (selectedDayOverride !== null ? selectedDayOverride === -1 : diffDays < 0)
                         ? 'bg-[#00a28a]/10 border border-[#00a28a]/40 text-[#00a28a] font-bold shadow-sm' 
-                        : 'border border-transparent text-slate-500'
+                        : 'border border-slate-200/40 hover:bg-slate-50 text-slate-500'
                     }`}
                   >
                     <div className={`w-2.5 h-2.5 rounded-full ${
-                      diffDays < 0 
+                      (selectedDayOverride !== null ? selectedDayOverride === -1 : diffDays < 0)
                         ? 'bg-[#00bfa5]' 
                         : 'bg-slate-300'
                     }`} />
                     <div className="text-[10px] tracking-wider uppercase font-semibold">
                       Procedure complete
                     </div>
-                  </div>
+                  </button>
                 </>
               ) : (
                 <div className="text-[10px] uppercase font-bold text-slate-400 w-full text-center py-1">Initializing Dynamic Schedule...</div>
@@ -812,16 +819,16 @@ export default function App() {
                     <div>
                       <div className="text-[10px] uppercase tracking-wider font-extrabold text-[#64748b] mb-1">Status Phase</div>
                       <div className="text-2xl font-black tracking-tight text-[#00a28a] uppercase">
-                        {diffDays > 7 && 'Pre-Preparation'}
-                        {diffDays < 0 && 'Procedure Complete'}
-                        {diffDays >= 0 && diffDays <= 7 && (activeDay?.daysOut === 0 ? 'Clinical Day' : 'Preparation Phase')}
+                        {currentActiveDaysOut > 7 && 'Pre-Preparation'}
+                        {currentActiveDaysOut < 0 && 'Procedure Complete'}
+                        {currentActiveDaysOut >= 0 && currentActiveDaysOut <= 7 && (activeDay?.daysOut === 0 ? 'Clinical Day' : 'Preparation Phase')}
                       </div>
                     </div>
                     <div>
                       <span className="text-[11px] text-slate-500 italic mt-2 block font-medium">
-                        {diffDays > 7 && 'Awaiting the 7-day preparation horizon.'}
-                        {diffDays < 0 && 'Post-clinical protocol achieved successfully.'}
-                        {diffDays >= 0 && diffDays <= 7 && 'Follow preparation steps closely.'}
+                        {currentActiveDaysOut > 7 && 'Awaiting the 7-day preparation horizon.'}
+                        {currentActiveDaysOut < 0 && 'Post-clinical protocol achieved successfully.'}
+                        {currentActiveDaysOut >= 0 && currentActiveDaysOut <= 7 && 'Follow preparation steps closely.'}
                       </span>
                     </div>
                   </div>
@@ -840,7 +847,7 @@ export default function App() {
                     </div>
                   )}
                   
-                  {diffDays > 7 ? (
+                  {currentActiveDaysOut > 7 ? (
                     /* More than 7 days ahead view */
                     <div className="py-12 text-center flex flex-col items-center gap-4 max-w-md mx-auto">
                       <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-[#00a28a] mb-2">
@@ -852,7 +859,7 @@ export default function App() {
                         Your input procedure date is still more than 7 days out. <strong>Please return to this protocol application when there are 7 days remaining</strong> to initiate your customized low-residue physical diet preparation.
                       </p>
                     </div>
-                  ) : diffDays < 0 ? (
+                  ) : currentActiveDaysOut < 0 ? (
                     /* Dates in the past view */
                     <div className="py-12 text-center flex flex-col items-center gap-4 max-w-md mx-auto">
                       <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-[#00bfa5] mb-2">
@@ -882,7 +889,7 @@ export default function App() {
 
                       <div className="space-y-5">
                         {activeDay.instructions.length > 0 ? (
-                          activeDay.instructions.map((inst, i) => (
+                          activeDay.instructions.filter(inst => inst && inst.title).map((inst, i) => (
                             <div key={i} className="flex gap-4 items-start p-4 hover:bg-slate-50/50 rounded-2xl transition-all border border-slate-200/25">
                               <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
                                 inst.type === 'diet' ? 'bg-[#00a28a]/10 text-[#00a28a]' :
@@ -921,7 +928,7 @@ export default function App() {
               </section>
 
               {/* Right Column: Symptoms Tracker & Protocol chatbot */}
-              <aside className="border-l border-teal-500/10 flex flex-col h-full overflow-hidden bg-white">
+              <aside className="border-l border-teal-500/10 flex flex-col h-full overflow-y-auto custom-scrollbar bg-white">
                 
                 {/* Symptom Tracker Panel */}
                 <div className="p-6 border-b border-teal-500/10 flex flex-col h-[280px]">
@@ -954,7 +961,7 @@ export default function App() {
 
                   <div className="flex-grow overflow-y-auto custom-scrollbar space-y-2 pr-1">
                     {symptoms.length > 0 ? (
-                      symptoms.map(s => (
+                      symptoms.filter(s => s && s.id && s.type).map(s => (
                         <div key={s.id} className="border border-slate-200/60 p-3 bg-white hover:bg-slate-50/50 rounded-xl flex items-center justify-between group transition-colors">
                           <div>
                             <div className="flex items-center gap-2 mb-1">
